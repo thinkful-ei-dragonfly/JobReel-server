@@ -44,5 +44,28 @@ usersRouter
         error: `Email already taken`
       })
     }
+
+    const hashedPassword = await UsersService.hashedPassword(password)
+
+    const newUser = {
+      email, 
+      first_name, 
+      last_name, 
+      username, 
+      password: hashedPassword
+    }
+
+    const user = await UsersService.insertUser(
+      req.app.get('db'),
+      newUser
+    )
+
+    res
+    .status(201)
+    .location(path.posix.join(originalUrl, `/${user.id}`))
+    .json(UsersService.serializeUser(user))
+  }
+  catch(error){
+    next(error)
   }
 })

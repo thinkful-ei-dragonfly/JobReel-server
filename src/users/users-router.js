@@ -10,10 +10,11 @@ usersRouter
   const { email, first_name, last_name, username, password } = req.body
 
   for (const field of ['email', 'first_name', 'last_name', 'username', 'password'])
-  if(!req.body[field])
+  if(!req.body[field]){
   return res.status(400).json({
     error: `Missing '${field}' in request body`
   })
+}
 
   try {
     const passwordError = UsersService.validatePassword(password)
@@ -45,7 +46,7 @@ usersRouter
       })
     }
 
-    const hashedPassword = await UsersService.hashedPassword(password)
+    const hashedPassword = await UsersService.hashPassword(password)
 
     const newUser = {
       email, 
@@ -62,10 +63,11 @@ usersRouter
 
     res
     .status(201)
-    .location(path.posix.join(originalUrl, `/${user.id}`))
+    .location(path.posix.join(req.originalUrl, `/${user.id}`))
     .json(UsersService.serializeUser(user))
   }
   catch(error){
     next(error)
   }
 })
+module.exports = usersRouter

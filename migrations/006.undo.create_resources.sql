@@ -1,0 +1,3 @@
+DROP TYPE IF EXISTS category;
+
+DROP TABLE IF EXISTS "resources";

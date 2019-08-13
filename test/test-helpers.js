@@ -1,4 +1,6 @@
 const knex = require('knex')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 function makeKnexInstance(){
   return knex({
@@ -56,3 +58,4 @@ module.exports = {
   makeUsersArray,
   makeMaliciousUser
 }
+

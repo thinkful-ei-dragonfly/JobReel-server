@@ -10,7 +10,6 @@ authRouter
   .post(jsonBodyParser, async (req, res, next) => {
     const { username, password } = req.body
     const loginUser = { username, password }
-    console.log(loginUser)
 
     for (const [key, value] of Object.entries(loginUser))
       if (value == null)
@@ -23,7 +22,7 @@ authRouter
         req.app.get('db'),
         loginUser.username
       )
-      console.log(dbUser)
+      
 
       if (!dbUser)
         return res.status(400).json({

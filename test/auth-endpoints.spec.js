@@ -73,10 +73,10 @@ describe('Auth Endpoints', function () {
       }
       const expectedToken = jwt.sign(
         { user_id: testUser.id, name: testUser.name },
-        process.env.JWT_SECRET,
+       config.JWT_SECRET,
         {
           subject: testUser.username,
-          expiresIn: process.env.JWT_EXPIRY,
+          expiresIn: config.JWT_EXPIRY,
           algorithm: 'HS256',
         }
       )
@@ -103,10 +103,10 @@ describe('Auth Endpoints', function () {
     it(`responds 200 and JWT auth token using secret`, () => {
       const expectedToken = jwt.sign(
         { user_id: testUser.id, name: testUser.name },
-        process.env.JWT_SECRET,
+        config.JWT_SECRET,
         {
           subject: testUser.username,
-          expiresIn: process.env.JWT_EXPIRY,
+          expiresIn: config.JWT_EXPIRY,
           algorithm: 'HS256',
         }
       )

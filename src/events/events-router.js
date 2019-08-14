@@ -28,5 +28,21 @@ eventsRouter
       next(error)
     }
   })
+  .post('/', jsonParser, async (req, res, next) => {
+    const { event_name, host, city, state, address, date, url, description, status } = req.body
+
+    for(const field of ['event_name', 'host', 'city', 'state', 'address', 'date', 'url', 'description', 'status'])
+    if(!req.body[field]){
+      return res
+      .status(400)
+      .json(
+        {
+          error: `Missing '${field}' in request body`
+        }
+      )
+    }
+
+    
+  })
 
   module.exports = eventsRouter

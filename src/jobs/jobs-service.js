@@ -1,3 +1,5 @@
+const xss = require('xss')
+
 const JobService = {
   getJobs(db, user_id) {
     return db
@@ -14,7 +16,6 @@ const JobService = {
         'status'
       )
       .where('user_id', user_id)
-      .first()
   },
 
   insertJob(db, newJob){
@@ -33,7 +34,7 @@ const JobService = {
       city: xss(job.city),
       state: xss(job.state),
       date_added: job.date_added,
-      url: xss(job.xss),
+      url: job.url,
       description: xss(job.description),
       status: job.status,
       user_id: job.user_id

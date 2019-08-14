@@ -98,7 +98,11 @@ function cleanTables(db){
 }
 
 function seedUsers(db, users) { 
-  return db.into('users').insert(users) 
+  const preppedUsers = users.map(user => ({
+    ...user,
+    password: bcrypt.hashSync(user.password, 1)
+  }))
+  return db.into('users').insert(preppedUsers) 
 }
 
 module.exports = {

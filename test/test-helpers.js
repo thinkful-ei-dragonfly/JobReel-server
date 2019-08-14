@@ -93,11 +93,16 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   return `Bearer ${token}`
 }
 
+function cleanTables(db){
+  return db.raw('TRUNCATE users, RESTART IDENTITY CASCADE')
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
   makeMaliciousUser,
   makeEventsArray,
-  makeAuthHeader
+  makeAuthHeader,
+  cleanTables
 }
 

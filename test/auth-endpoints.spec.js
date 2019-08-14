@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
+const config = require('../src/config')
 
 describe('Auth Endpoints', function () {
   let db

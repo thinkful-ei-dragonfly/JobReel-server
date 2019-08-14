@@ -7,3 +7,10 @@ services:
 before_script:
 - psql -U postgres -c 'create database "jobreel-test";'
 - npm run migrate
+
+env:
+  global:
+    - MIGRATION_DB_HOST=localhost
+    - MIGRATION_DB_PORT=5432
+    - MIGRATION_DB_NAME=jobreel
+    - MIGRATION_DB_USER=postgres

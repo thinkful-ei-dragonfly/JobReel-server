@@ -53,9 +53,50 @@ function makeMaliciousUser(){
   }
 }
 
+function makeEventsArray(){
+  return [
+    {
+      event_id: 1,
+      event_name: 'Event 1',
+      host: 'Host 1',
+      city: 'City1',
+      state: 'State1',
+      address: 'Address 1',
+      date: '2019-07-03T19:26:38.918Z',
+      url: 'http://event1.com',
+      description: 'Description for Event 1',
+      status: 'Will attend',
+      user_id: 1
+    },
+    {
+      event_id: 2,
+      event_name: 'Event 2',
+      host: 'Host 2',
+      city: 'City2',
+      state: 'State2',
+      address: 'Address 2',
+      date: '2019-07-03T19:26:38.918Z',
+      url: 'http://event2.com',
+      description: 'Description for Event 2',
+      status: 'Interested',
+      user_id: 2
+    }
+  ]
+}
+
+function makeAuthHeader(user, secret = process.env.JWT_SECRET){
+  const token = jwt.sign({ user_id: user.id}, secret, {
+    subject: user.username,
+    algorithm: 'HS256',
+  })
+  return `Bearer ${token}`
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
-  makeMaliciousUser
+  makeMaliciousUser,
+  makeEventsArray,
+  makeAuthHeader
 }
 

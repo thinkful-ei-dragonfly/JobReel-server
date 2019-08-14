@@ -1,11 +1,12 @@
 const knex = require('knex')
+const config = require('../src/config')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 function makeKnexInstance(){
   return knex({
     client: 'pg',
-    connection: process.env.TEST_DB_URL,
+    connection: config.TEST_DB_URL,
   })
 }
 

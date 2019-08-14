@@ -17,7 +17,9 @@ eventsRouter
         req.user.id
       )
 
-      res.json(
+      res
+      .status(200)
+      .json(
         events
       )
       next()

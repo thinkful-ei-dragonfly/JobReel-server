@@ -13,6 +13,7 @@ const EventsService = {
       'url',
       'description',
       'status',
+      'user_id'
     )
     .where('user_id', user_id)
   }

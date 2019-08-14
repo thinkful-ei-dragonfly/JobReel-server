@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
+const config = require('../src/config')
 
 describe('Auth Endpoints', function () {
   let db
@@ -69,14 +70,15 @@ describe('Auth Endpoints', function () {
     it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
       const userValidCreds = {
         username: testUser.username,
-        password: testUser.password,
+        password: testUser.password
       }
+
       const expectedToken = jwt.sign(
-        { user_id: testUser.id, name: testUser.name },
-        process.env.JWT_SECRET,
+        { user_id: testUser.id, username: testUser.username },
+       config.JWT_SECRET,
         {
           subject: testUser.username,
-          expiresIn: process.env.JWT_EXPIRY,
+          expiresIn: config.JWT_EXPIRY,
           algorithm: 'HS256',
         }
       )
@@ -103,10 +105,10 @@ describe('Auth Endpoints', function () {
     it(`responds 200 and JWT auth token using secret`, () => {
       const expectedToken = jwt.sign(
         { user_id: testUser.id, name: testUser.name },
-        process.env.JWT_SECRET,
+        config.JWT_SECRET,
         {
           subject: testUser.username,
-          expiresIn: process.env.JWT_EXPIRY,
+          expiresIn: config.JWT_EXPIRY,
           algorithm: 'HS256',
         }
       )

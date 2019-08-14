@@ -1,11 +1,12 @@
 const knex = require('knex')
+const config = require('../src/config')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 function makeKnexInstance(){
   return knex({
     client: 'pg',
-    connection: process.env.TEST_DB_URL,
+    connection: config.TEST_DB_URL,
   })
 }
 
@@ -92,11 +93,25 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   return `Bearer ${token}`
 }
 
+function cleanTables(db){
+  return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
+}
+
+function seedUsers(db, users) { 
+  const preppedUsers = users.map(user => ({
+    ...user,
+    password: bcrypt.hashSync(user.password, 1)
+  }))
+  return db.into('users').insert(preppedUsers) 
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
   makeMaliciousUser,
   makeEventsArray,
-  makeAuthHeader
+  makeAuthHeader,
+  cleanTables,
+  seedUsers
 }
 

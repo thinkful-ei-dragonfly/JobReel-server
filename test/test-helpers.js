@@ -94,7 +94,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET){
 }
 
 function cleanTables(db){
-  return db.raw('TRUNCATE users, RESTART IDENTITY CASCADE')
+  return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
 }
 
 module.exports = {

@@ -79,5 +79,12 @@ describe ('Events Endpoints', () => {
         .expect(200, [])
       })
     })
+
+    context(`Given there are events in the database`, () => {
+      const testEvents = helpers.makeEventsArray()
+      const testUsers = helpers.makeUsersArray()
+
+      before
+    })
   })
 })

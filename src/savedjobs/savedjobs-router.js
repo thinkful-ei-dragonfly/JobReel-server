@@ -1,15 +1,15 @@
 const express = require('express')
 const path = require('path')
-const JobService = require('./jobs-service')
+const JobService = require('./savedjobs-service')
 const { requireAuth } = require('../middleware/jwt-auth')
 
-const jobRouter = express.Router()
+const savedJobRouter = express.Router()
 const bodyParser = express.json()
 
-jobRouter
+savedJobRouter
   .use(requireAuth)
 
-jobRouter
+savedJobRouter
   .get('/', async (req, res, next) => {
     try {
       const jobs = await JobService.getJobs(
@@ -94,4 +94,4 @@ jobRouter
   })
 
 
-module.exports = jobRouter
+module.exports = savedJobRouter

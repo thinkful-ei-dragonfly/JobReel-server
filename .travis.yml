@@ -14,3 +14,4 @@ env:
     - MIGRATION_DB_PORT=5432
     - MIGRATION_DB_NAME=jobreel-test
     - MIGRATION_DB_USER=postgres
+    - JWT_SECRET="jobReel-jwt-secret"

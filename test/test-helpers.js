@@ -97,12 +97,17 @@ function cleanTables(db){
   return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
 }
 
+function seedUsers(db, users) { 
+  return db.into('users').insert(users) 
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
   makeMaliciousUser,
   makeEventsArray,
   makeAuthHeader,
-  cleanTables
+  cleanTables,
+  seedUsers
 }
 

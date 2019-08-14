@@ -7,7 +7,7 @@ const jsonBodyParser = express.json()
 
 jobsRouter
     .route('/')
-    .post(jsonBodyParser, (req, res, next) => {
+    .post(jsonBodyParser, (req, res, next) => {  
         unirest.get(`https://indeed-indeed.p.rapidapi.com/apisearch`)
             .header("x-rapidapi-host", "indeed-indeed.p.rapidapi.com")
             .header("x-rapidapi-key", "db5a101104mshcf69cbd8b65f653p1ddc40jsn7f91d36c4804")
@@ -19,9 +19,9 @@ jobsRouter
     })
 
 jobsRouter
-    .route(`/url`)
+    .route(`/job`)
     .post(jsonBodyParser, (req, res, next) => {
-        const { recipeId } = req.body
+        const { jobkey } = req.body
         unirest.get(`https://indeed-indeed.p.rapidapi.com/apigetjobs`)
             .header("x-rapidapi-host", "indeed-indeed.p.rapidapi.com")
             .header("x-rapidapi-key", "db5a101104mshcf69cbd8b65f653p1ddc40jsn7f91d36c4804")

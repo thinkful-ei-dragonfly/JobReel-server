@@ -6,6 +6,7 @@ const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 const authRouter = require('./auth/auth-router')
 const usersRouter = require('./users/users-router')
+const savedJobRouter = require('./savedjobs/savedjobs-router')
 const eventsRouter = require('./events/events-router')
 
 const app = express()
@@ -21,6 +22,7 @@ app.use(helmet())
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/jobs', savedJobRouter)
 app.use('/api/events', eventsRouter)
 
 app.get('/', (req, res) => {

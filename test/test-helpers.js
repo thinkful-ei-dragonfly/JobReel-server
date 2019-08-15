@@ -54,6 +54,36 @@ function makeMaliciousUser(){
   }
 }
 
+function makeJobsArray(){
+  return[
+    {
+      job_id: 1,
+      user_id: 1, 
+      job_title: 'Engineer',
+      company: 'Company A',
+      city: 'New York City',
+      state: 'NY',
+      date_added: "2019-08-14T17:18:19.306Z",
+      url: 'http://www.thinkful.com',
+      description: 'Engineering job',
+      status: 'Interested',
+    },
+    {
+      job_id: 2,
+      user_id: 1, 
+      job_title: 'UI Designer',
+      company: 'Company B',
+      city: 'Austin',
+      state: 'TX',
+      date_added: "2019-08-14T17:18:19.306Z",
+      url: 'http://www.google.com',
+      description: 'UI job',
+      status: 'Interested',
+
+    }
+  ]
+}
+
 function makeEventsArray(){
   return [
     {
@@ -93,11 +123,20 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   return `Bearer ${token}`
 }
 
-function cleanTables(db){
-  return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
+function cleanTables(db) {
+  return db.raw(
+    `TRUNCATE
+      jobs,
+      users
+      RESTART IDENTITY CASCADE`
+  );
 }
 
-function seedUsers(db, users) { 
+// function cleanTables(db){
+//   return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
+// }
+
+function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
     ...user,
     password: bcrypt.hashSync(user.password, 1)
@@ -105,13 +144,50 @@ function seedUsers(db, users) {
   return db.into('users').insert(preppedUsers) 
 }
 
+// function seedUsers(db, users) { 
+//   const preppedUsers = users.map(user => ({
+//     ...user,
+//     password: bcrypt.hashSync(user.password, 1)
+//   }))
+//   return db.transaction(async trx => {
+//     await trx.into('users').insert(preppedUsers)
+//   })
+// }
+
+function seedJobs(db, users, jobs) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('jobs').insert(jobs)
+  })
+}
+
+function makeExpectedJob(users, job) {
+  const user = users
+    .find(user => user.id === job.user_id)
+
+  return {
+    job_id: job.job_id,
+    job_title: job.job_title,
+    company: job.company,
+    city: job.city,
+    state: job.state,
+    date_added: job.date_added,
+    url: job.url,
+    description: job.description,
+    status: job.status,
+  }
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
   makeMaliciousUser,
-  makeEventsArray,
+  makeJobsArray,
   makeAuthHeader,
   cleanTables,
-  seedUsers
+  seedUsers,
+  seedJobs,
+  makeExpectedJob,
+  makeEventsArray
 }
 

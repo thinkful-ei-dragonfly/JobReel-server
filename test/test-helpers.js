@@ -175,6 +175,35 @@ function makeContactsArray(){
   ]
 }
 
+function makeCompaniesArray(){
+  return [
+    {
+      company_id: 1,
+      company_name: 'Company 1',
+      city: 'City',
+      state: 'AZ',
+      industry: 'Tech',
+      website: 'http://www.company.com/company1',
+      description: 'Company 1 Description',
+      contact: 'Contact 1',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 1
+    },
+    {
+      company_id: 2,
+      company_name: 'Company 2',
+      city: 'City',
+      state: 'FL',
+      industry: 'Auto',
+      website: 'http://www.company.com/company2',
+      description: 'Company 2 Description',
+      contact: 'Contact 2',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 2
+    }
+  ]
+}
+
 function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
@@ -186,6 +215,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET){
 function cleanTables(db) {
   return db.raw(
     `TRUNCATE
+      companies,
       contacts,
       jobs,
       users

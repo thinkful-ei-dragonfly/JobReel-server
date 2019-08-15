@@ -13,10 +13,15 @@ contactsRouter
 contactsRouter
   .get('/', async (req, res, next) => {
     try {
-      const contacts = await ContactService.getContacts(
+      let contacts = await ContactService.getContacts(
         req.app.get('db'),
         req.user.id,
       )
+
+      
+      contacts = contacts.map(contact => {
+        return ContactService.serializeEvent(contact)
+      })
 
       res.json({
         contacts

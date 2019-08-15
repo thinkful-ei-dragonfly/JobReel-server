@@ -162,10 +162,6 @@ function cleanTables(db) {
   );
 }
 
-// function cleanTables(db){
-//   return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
-// }
-
 function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
     ...user,
@@ -173,16 +169,6 @@ function seedUsers(db, users) {
   }))
   return db.into('users').insert(preppedUsers) 
 }
-
-// function seedUsers(db, users) { 
-//   const preppedUsers = users.map(user => ({
-//     ...user,
-//     password: bcrypt.hashSync(user.password, 1)
-//   }))
-//   return db.transaction(async trx => {
-//     await trx.into('users').insert(preppedUsers)
-//   })
-// }
 
 function seedJobs(db, users, jobs) {
   return db.transaction(async trx => {
@@ -198,23 +184,6 @@ function seedContacts(db, users, contacts) {
   })
 }
 
-function makeExpectedJob(users, job) {
-  const user = users
-    .find(user => user.id === job.user_id)
-
-  return {
-    job_id: job.job_id,
-    job_title: job.job_title,
-    company: job.company,
-    city: job.city,
-    state: job.state,
-    date_added: job.date_added,
-    url: job.url,
-    description: job.description,
-    status: job.status,
-  }
-}
-
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
@@ -225,7 +194,6 @@ module.exports = {
   seedUsers,
   seedJobs,
   seedContacts,
-  makeExpectedJob,
   makeEventsArray,
   makeContactsArray
 }

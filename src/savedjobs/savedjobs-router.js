@@ -13,10 +13,14 @@ savedJobRouter
 savedJobRouter
   .get('/', async (req, res, next) => {
     try {
-      const jobs = await JobService.getJobs(
+      let jobs = await JobService.getJobs(
         req.app.get('db'),
         req.user.id,
       )
+
+      jobs = jobs.map(job => {
+        return JobService.serializeJob(job)
+      })
 
       res.json({
         jobs

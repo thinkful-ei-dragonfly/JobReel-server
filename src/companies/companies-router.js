@@ -10,9 +10,25 @@ const bodyParser = express.json()
 companiesRouter
   .use(requireAuth)
 
-  companiesRouter
+companiesRouter
   .get('/', async (req, res, next) => {
+    try {
+      let companies = await CompanyService.getCompanies(
+        req.app.get('db'),
+        req.user.id,
+      )
 
+      companies = companies.map(company => {
+        return CompanyService.serializeCompany(company)
+      })
+
+      res.json({
+        companies
+      })
+      next()
+    } catch(error) {
+      next(error)
+    }
   })
 
-module.export = companiesRouter
+module.exports = companiesRouter

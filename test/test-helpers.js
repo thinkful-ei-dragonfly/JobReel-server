@@ -249,6 +249,13 @@ function seedContacts(db, users, contacts) {
   })
 }
 
+function seedCompanies(db, users, companies) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('companies').insert(companies)
+  })
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
@@ -261,7 +268,9 @@ module.exports = {
   seedEvents,
   seedJobs,
   seedContacts,
+  seedCompanies,
   makeEventsArray,
-  makeContactsArray
+  makeContactsArray,
+  makeCompaniesArray
 }
 

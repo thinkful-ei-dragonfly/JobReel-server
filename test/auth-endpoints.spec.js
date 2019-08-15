@@ -104,8 +104,8 @@ describe('Auth Endpoints', function () {
 
     it(`responds 200 and JWT auth token using secret`, () => {
       const expectedToken = jwt.sign(
-        { user_id: testUser.id, name: testUser.name },
-        config.JWT_SECRET,
+        { user_id: testUser.id, username: testUser.username },
+       config.JWT_SECRET,
         {
           subject: testUser.username,
           expiresIn: config.JWT_EXPIRY,

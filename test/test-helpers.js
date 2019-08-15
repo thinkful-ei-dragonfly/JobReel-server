@@ -85,6 +85,27 @@ function makeMaliciousEvent() {
   }
 }
 
+function makeMaliciousResource() {
+  const maliciousResource = {
+    resource_id: 1,
+    type: 'website',
+    title: 'Resource 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    description: 'Description for resource 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    date_added: '2019-07-03T19:26:38.918Z',
+    user_id: 1
+  }
+
+  const expectedResource = {
+    ...maliciousResource,
+    title: 'Resource 1 <img src="https://url.to.file.which/does-not.exist">',
+    description: 'Description for resource 1 <img src="https://url.to.file.which/does-not.exist">'
+  }
+  return {
+    maliciousResource,
+    expectedResource
+  }
+}
+
 function makeJobsArray() {
   return [
     {
@@ -146,6 +167,56 @@ function makeEventsArray() {
   ]
 }
 
+function makeContactsArray() {
+  return [
+    {
+      contact_id: 1,
+      contact_name: 'Contact 1',
+      job_title: 'Engineer',
+      company: 'Company1',
+      email: 'email@email.com',
+      linkedin: 'http://www.linkedin.com/person1',
+      comments: 'Contact 1 comments',
+      date_added: '2019-07-03T19:26:38.918Z',
+      connected: false,
+      user_id: 1
+    },
+    {
+      contact_id: 2,
+      contact_name: 'Contact 2',
+      job_title: 'Analyst',
+      company: 'Company2',
+      email: 'email2@email.com',
+      linkedin: 'http://www.linkedin.com/person2',
+      comments: 'Contact 2 comments',
+      date_added: '2019-07-03T19:26:38.918Z',
+      connected: true,
+      user_id: 2
+    }
+  ]
+}
+
+function makeResourcesArray() {
+  return [
+    {
+      resource_id: 1,
+      type: 'website',
+      title: 'Resource 1',
+      description: 'Description for resource 1',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 1
+    },
+    {
+      resource_id: 2,
+      type: 'book',
+      title: 'Resource 2',
+      description: 'Description for resource 2',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 2
+    }
+  ]
+}
+
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
@@ -157,15 +228,12 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 function cleanTables(db) {
   return db.raw(
     `TRUNCATE
+      contacts,
       jobs,
       users
       RESTART IDENTITY CASCADE`
   );
 }
-
-// function cleanTables(db){
-//   return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
-// }
 
 function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
@@ -175,19 +243,9 @@ function seedUsers(db, users) {
   return db.into('users').insert(preppedUsers)
 }
 
-function seedEvents(db, events){
+function seedEvents(db, events) {
   return db.into('events').insert(events)
 }
-
-// function seedUsers(db, users) { 
-//   const preppedUsers = users.map(user => ({
-//     ...user,
-//     password: bcrypt.hashSync(user.password, 1)
-//   }))
-//   return db.transaction(async trx => {
-//     await trx.into('users').insert(preppedUsers)
-//   })
-// }
 
 function seedJobs(db, users, jobs) {
   return db.transaction(async trx => {
@@ -196,21 +254,15 @@ function seedJobs(db, users, jobs) {
   })
 }
 
-function makeExpectedJob(users, job) {
-  const user = users
-    .find(user => user.id === job.user_id)
+function seedContacts(db, users, contacts) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('contacts').insert(contacts)
+  })
+}
 
-  return {
-    job_id: job.job_id,
-    job_title: job.job_title,
-    company: job.company,
-    city: job.city,
-    state: job.state,
-    date_added: job.date_added,
-    url: job.url,
-    description: job.description,
-    status: job.status,
-  }
+function seedResources(db, resources) {
+  return db.into('resources').insert(resources)
 }
 
 module.exports = {
@@ -218,13 +270,17 @@ module.exports = {
   makeUsersArray,
   makeMaliciousUser,
   makeMaliciousEvent,
+  makeMaliciousResource,
   makeJobsArray,
   makeAuthHeader,
   cleanTables,
   seedUsers,
   seedEvents,
   seedJobs,
-  makeExpectedJob,
-  makeEventsArray
+  seedContacts,
+  seedResources,
+  makeEventsArray,
+  makeContactsArray,
+  makeResourcesArray
 }
 

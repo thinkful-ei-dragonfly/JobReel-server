@@ -25,7 +25,7 @@ describe('Saved Jobs Endpoints', () => {
       const testJobs = helpers.makeJobsArray()
       const testUsers  = helpers.makeUsersArray()
 
-      beforeEach('Seed jobs', () =>
+      beforeEach('insert jobs', () =>
       helpers.seedJobs(
         db,
         testUsers,
@@ -81,25 +81,24 @@ describe('Saved Jobs Endpoints', () => {
     })
 
     context(`Given there are jobs in the db`, () => {
-      beforeEach('Seed jobs', () =>
+      beforeEach('insert jobs', () =>
       helpers.seedJobs(
         db,
         testUsers,
         testJobs
       )
     )
-      it(`responds with 200 and returns an array of jobs`, () => {
-        const expectedJobs = testJobs.map(job => 
-          helpers.makeExpectedJob(
-            testUsers,
-            job
-          ));
+
+      it('responds with 200 and all of the jobs for a user', () => {
+        const validCreds = { username: testUser.username, password: testUser.password }
+        const userId = testUser.id
+        const filteredTestJobs = testJobs.filter(job => job.user_id === userId)
 
         return supertest(app)
-        .get('/api/savedjobs')
-        .set('Authorization', helpers.makeAuthHeader(testUser))
-        .expect(200, {jobs: expectedJobs})
-        })
+        .get(`/api/savedjobs`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(200, {jobs: filteredTestJobs})
+      })
       })
     })
     

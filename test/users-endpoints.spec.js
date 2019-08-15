@@ -166,9 +166,7 @@ describe('User Endpoints', () => {
       const testUser = testUsers[0]
 
       beforeEach('insert users', () => {
-        return db
-          .into('users')
-          .insert(testUsers)
+        return helpers.seedUsers(db, testUsers)
       })
 
       it(`responds 400 'An account with this email already exists' when email isn't unique`, () => {

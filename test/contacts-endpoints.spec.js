@@ -2,10 +2,9 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const bcrypt = require('bcryptjs')
 
-describe('Saved Contacts Endpoints', () => {
+describe.only('Saved Contacts Endpoints', () => {
   let db
 
-  
   const testUsers = helpers.makeUsersArray()
   const [testUser] = testUsers
   const testContacts = helpers.makeContactsArray()

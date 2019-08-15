@@ -18,9 +18,8 @@ contactsRouter
         req.user.id,
       )
 
-      
       contacts = contacts.map(contact => {
-        return ContactService.serializeEvent(contact)
+        return ContactService.serializeContact(contact)
       })
 
       res.json({

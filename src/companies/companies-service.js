@@ -19,6 +19,14 @@ const CompanyService = {
       .where('user_id', user_id)
   },
 
+  insertCompany(db, newCompany){
+    return db
+    .insert(newCompany)
+    .into('companies')
+    .returning('*')
+    .then(([company]) => company)
+  },
+
   serializeCompany(company){
     return {
       company_id: company.company_id,

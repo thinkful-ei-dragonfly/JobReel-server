@@ -1,6 +1,5 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
-const bcrypt = require('bcryptjs')
 
 describe('Saved Contacts Endpoints', () => {
   let db
@@ -194,7 +193,7 @@ describe('Saved Contacts Endpoints', () => {
               expect(row.linkedin).to.eql(newContact.linkedin)
               expect(row.comments).to.eql(newContact.comments)
               const expectedDate = new Date().toLocaleString();
-              const actualDate = new Date(res.body.date_added).toLocaleString();
+              const actualDate = new Date(row.date_added).toLocaleString();
               expect(actualDate).to.eql(expectedDate);
             })
       )

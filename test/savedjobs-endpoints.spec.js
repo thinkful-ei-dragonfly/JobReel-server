@@ -1,6 +1,5 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
-const bcrypt = require('bcryptjs')
 
 describe('Saved Jobs Endpoints', () => {
   let db

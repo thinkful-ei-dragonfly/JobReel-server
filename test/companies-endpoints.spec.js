@@ -1,8 +1,7 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
-const bcrypt = require('bcryptjs')
 
-describe.only('Saved Companies Endpoints', () => {
+describe('Saved Companies Endpoints', () => {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -100,6 +99,121 @@ describe.only('Saved Companies Endpoints', () => {
           .expect(200, {companies: filteredTestCompanies})
         })
       })
+  })
+
+  describe(`POST /api/companies`, () => {
+    beforeEach('insert users', () => {
+      return db
+      .into('users')
+      .insert(testUsers)
+    })
+
+    const requiredFields = ['company_name', 'city', 'state']
+
+    requiredFields.forEach((field) => {
+      const companyBody = {
+        company_name: 'Company 1',
+        city: 'City1',
+        state: 'MD'
+      }
+
+      it(`responds with 400 required error when '${field}' is missing`, () => {
+        delete companyBody[field]
+
+        return supertest(app)
+          .post('/api/companies')
+          .send(companyBody)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(400, {
+            error: `Missing '${field}' in request body`,
+          })
+      })
+    })
+
+
+    it(`responds with 400 and error message about state code`, () => {
+      const invalidState = {
+        company_name: 'Company1',
+        city: 'City1',
+        state: 'M'
+      }
+
+      return supertest(app)
+      .post('/api/companies')
+      .set('Authorization', helpers.makeAuthHeader(testUser))
+      .send(invalidState)
+      .expect(400, {
+        error: 'Not a valid state code'
+      })
+    })
+
+    it(`responds with 400 and error message about invalid website`, () => {
+      const invalidURL = {
+        company_name: 'Company1',
+        city: 'City1',
+        state: 'IL',
+        website: 'www.companywebsite.com'
+      }
+
+      return supertest(app)
+      .post('/api/companies')
+      .set('Authorization', helpers.makeAuthHeader(testUser))
+      .send(invalidURL)
+      .expect(400, {
+        error: 'Not a valid URL'
+      })
+    })
+
+    it(`responds with 201 and returns the posted contact`, () => {
+      const newCompany = {
+        company_name: 'Company 3',
+        city: 'City 3',
+        state: 'IL',
+        website: 'http://www.companywebsite.com',
+        industry: 'Tech',
+        description: 'Description',
+        contact: 'Contact 3'
+      }
+
+      return supertest(app)
+        .post('/api/companies')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .send(newCompany)
+        .expect(201)
+        .expect(res => {
+          expect(res.body).to.have.property('company_id')
+          expect(res.body).to.have.property('user_id')
+          expect(res.body.company_name).to.eql(newCompany.company_name)
+          expect(res.body.city).to.eql(newCompany.city)
+          expect(res.body.state).to.eql(newCompany.state)
+          expect(res.body.industry).to.eql(newCompany.industry)
+          expect(res.body.website).to.eql(newCompany.website)
+          expect(res.body.description).to.eql(newCompany.description)
+          expect(res.headers.location).to.eql(`/api/companies/${res.body.company_id}`)
+          const expectedDate = new Date().toLocaleString();
+          const actualDate = new Date(res.body.date_added).toLocaleString();
+          expect(actualDate).to.eql(expectedDate);
+        })
+        .expect(res =>
+          db
+            .from('companies')
+            .select('*')
+            .where({ user_id: res.body.user_id })
+            .first()
+            .then(row => {
+              expect(row.company_name).to.eql(newCompany.company_name)
+              expect(row.city).to.eql(newCompany.city)
+              expect(row.state).to.eql(newCompany.state)
+              expect(row.industry).to.eql(newCompany.industry)
+              expect(row.website).to.eql(newCompany.website)
+              expect(row.description).to.eql(newCompany.description)
+              expect(row.contact).to.eql(newCompany.contact)
+              const expectedDate = new Date().toLocaleString();
+              const actualDate = new Date(row.date_added).toLocaleString();
+              expect(actualDate).to.eql(expectedDate);
+            })
+      )
+    })
   })
 
 })

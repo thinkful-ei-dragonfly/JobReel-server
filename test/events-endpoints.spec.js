@@ -129,7 +129,7 @@ describe('Events Endpoints', () => {
     })
   })
 
-  describe(`POST /api/events/`, () => {
+  describe(`POST /api/events`, () => {
     const testUsers = helpers.makeUsersArray()
 
     beforeEach('insert users', () => {

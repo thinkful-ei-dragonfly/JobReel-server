@@ -23,6 +23,13 @@ const ResourcesService = {
       date_added: resource.date_added,
       user_id: resource.user_id
     }
+  },
+  insertResource(db, resource){
+    return db
+    .insert(resource)
+    .into('resources')
+    .returning('*')
+    .then(([resource]) => resource)
   }
 }
 module.exports = ResourcesService

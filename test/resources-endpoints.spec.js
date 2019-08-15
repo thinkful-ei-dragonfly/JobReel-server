@@ -1,7 +1,7 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Resources Enpoints', () => {
+describe('Resources Enpoints', () => {
   let db
 
   before('make knex instance', () => {
@@ -14,7 +14,7 @@ describe.only('Resources Enpoints', () => {
 
   afterEach('cleanup', () => db.raw('TRUNCATE users, resources RESTART IDENTITY CASCADE'))
 
-  describe.only(`GET /api/resources`, () => {
+  describe(`GET /api/resources`, () => {
 
     context(`Given no authorization`, () => {
       const testResources = helpers.makeResourcesArray()
@@ -22,17 +22,17 @@ describe.only('Resources Enpoints', () => {
 
       beforeEach('insert resources', () => {
         return helpers.seedUsers(db, testUsers)
-        .then(() => {
-          return helpers.seedResources(db, testResources)
-        })
+          .then(() => {
+            return helpers.seedResources(db, testResources)
+          })
       })
 
       it(`responds 401 'Missing bearer token' when no bearer token`, () => {
         return supertest(app)
-        .get(`/api/resources`)
-        .expect(401, {
-          error: 'Missing bearer token'
-        })
+          .get(`/api/resources`)
+          .expect(401, {
+            error: 'Missing bearer token'
+          })
       })
 
       it(`responds 401 'Unauthorized request' when invalid JWT secret`, () => {
@@ -40,22 +40,22 @@ describe.only('Resources Enpoints', () => {
         const invalidSecret = 'bad-secret'
 
         return supertest(app)
-        .get(`/api/resources`)
-        .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
-        .expect(401, {
-          error: 'Unauthorized request'
-        })
+          .get(`/api/resources`)
+          .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
+          .expect(401, {
+            error: 'Unauthorized request'
+          })
       })
 
       it(`responds 401 'Unauthorized request' when ivalid sub in payload`, () => {
         const invalidUser = { username: 'NonExistent', id: 1 }
 
         return supertest(app)
-        .get(`/api/resources`)
-        .set('Authorization', helpers.makeAuthHeader(invalidUser))
-        .expect(401, {
-          error: 'Unauthorized request'
-        })
+          .get(`/api/resources`)
+          .set('Authorization', helpers.makeAuthHeader(invalidUser))
+          .expect(401, {
+            error: 'Unauthorized request'
+          })
       })
     })
 
@@ -67,11 +67,11 @@ describe.only('Resources Enpoints', () => {
 
       it(`responds with 200 and an empty list`, () => {
         const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
-        
+
         return supertest(app)
-        .get(`/api/resources`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, [])
+          .get(`/api/resources`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, [])
       })
     })
 
@@ -81,9 +81,9 @@ describe.only('Resources Enpoints', () => {
 
       beforeEach('insert resources', () => {
         return helpers.seedUsers(db, testUsers)
-        .then(() => {
-          return helpers.seedResources(db, testResources)
-        })
+          .then(() => {
+            return helpers.seedResources(db, testResources)
+          })
       })
 
       it('responds with 200 and all of the resources for a user', () => {
@@ -92,9 +92,9 @@ describe.only('Resources Enpoints', () => {
         const filteredResources = testResources.filter(resource => resource.user_id === userId)
 
         return supertest(app)
-        .get(`/api/resources`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, filteredResources)
+          .get(`/api/resources`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, filteredResources)
       })
     })
 
@@ -104,24 +104,89 @@ describe.only('Resources Enpoints', () => {
 
       beforeEach('insert malicious resource', () => {
         return helpers.seedUsers(db, testUsers)
-        .then(() => {
-          return db
-          .into('resources')
-          .insert(maliciousResource)
-        })
+          .then(() => {
+            return db
+              .into('resources')
+              .insert(maliciousResource)
+          })
       })
 
       it('removes XSS attack content', () => {
         const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
 
         return supertest(app)
-        .get(`/api/resources`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200)
-        .expect(res => {
-          expect(res.body[0].title).to.eql(expectedResource.title)
-          expect(res.body[0].description).to.eql(expectedResource.description)
-        })
+          .get(`/api/resources`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200)
+          .expect(res => {
+            expect(res.body[0].title).to.eql(expectedResource.title)
+            expect(res.body[0].description).to.eql(expectedResource.description)
+          })
+      })
+    })
+  })
+
+  describe(`POST /api/resources`, () => {
+    const testUsers = helpers.makeUsersArray()
+
+    beforeEach('insert users', () => {
+      return helpers.seedUsers(db, testUsers)
+    })
+
+    const requiredFields =
+      [
+        'type',
+        'title',
+        'description',
+        'date_added',
+        'user_id'
+      ]
+
+    requiredFields.forEach(field => {
+      const newResource = {
+        type: 'website',
+        title: 'Resource 1',
+        description: 'Description for resource 1',
+        date_added: '2019-07-03T19:26:38.918Z',
+        user_id: 1
+      }
+      it(`responds with 400 and an error message when the '${field}' is missing`, () => {
+        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+        delete newResource[field]
+
+        return supertest(app)
+          .post(`/api/resources`)
+          .send(newResource)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: `Missing '${field}' in request body`
+          })
+      })
+    })
+
+    it(`creates a resource, responding with 201 and the new resource`, () => {
+      const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+      const newResource = {
+        type: 'website',
+        title: 'Resource 1',
+        description: 'Description for resource 1',
+        date_added: '2019-07-03T19:26:38.918Z',
+        user_id: 1
+      }
+
+      return supertest(app)
+      .post(`/api/resources`)
+      .send(newResource)
+      .set('Authorization', helpers.makeAuthHeader(validCreds))
+      .expect(201)
+      .expect(res => {
+        expect(res.body.type).to.eql(newResource.type)
+        expect(res.body.title).to.eql(newResource.title)
+        expect(res.body.description).to.eql(newResource.description)
+        expect(res.body.date_added).to.eql(newResource.date_added)
+        expect(res.body.user_id).to.eql(newResource.user_id)
+        expect(res.body).to.have.property('resource_id')
+        expect(res.headers.location).to.eql(`/api/resources/${res.body.resource_id}`)
       })
     })
   })

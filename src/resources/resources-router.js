@@ -32,5 +32,43 @@ resourcesRouter
     next(error)
   }
 })
+.post('/', jsonParser, async (req, res, next) => {
+  const { type, title, description, date_added } = req.body
+
+  for(const field of ['type', 'title', 'description', 'date_added', 'user_id'])
+  if(!req.body[field]){
+    return res
+    .status(400)
+    .json(
+      {
+        error: `Missing '${field}' in request body`
+      }
+    )
+  }
+
+  try{
+    const newResource = {
+      type,
+      title,
+      description,
+      date_added
+    }
+
+    newResource.user_id = req.user.id
+
+    const resource = await ResourcesService.insertResource(
+      req.app.get('db'),
+      newResource
+    )
+    
+    res
+    .status(201)
+    .location(path.posix.join(req.originalUrl, `/${resource.resource_id}`))
+    .json(ResourcesService.serializeResource(resource))
+  }
+  catch(error){
+    next(error)
+  }
+})
 
 module.exports = resourcesRouter

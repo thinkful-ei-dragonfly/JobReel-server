@@ -85,6 +85,27 @@ function makeMaliciousEvent() {
   }
 }
 
+function makeMaliciousResource() {
+  const maliciousResource = {
+    resource_id: 1,
+    type: 'website',
+    title: 'Resource 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    description: 'Description for resource 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    date_added: '2019-07-03T19:26:38.918Z',
+    user_id: 1
+  }
+
+  const expectedResource = {
+    ...maliciousResource,
+    title: 'Resource 1 <img src="https://url.to.file.which/does-not.exist">',
+    description: 'Description for resource 1 <img src="https://url.to.file.which/does-not.exist">'
+  }
+  return {
+    maliciousResource,
+    expectedResource
+  }
+}
+
 function makeJobsArray() {
   return [
     {
@@ -146,7 +167,7 @@ function makeEventsArray() {
   ]
 }
 
-function makeContactsArray(){
+function makeContactsArray() {
   return [
     {
       contact_id: 1,
@@ -175,7 +196,28 @@ function makeContactsArray(){
   ]
 }
 
-function makeAuthHeader(user, secret = process.env.JWT_SECRET){
+function makeResourcesArray() {
+  return [
+    {
+      resource_id: 1,
+      type: 'website',
+      title: 'Resource 1',
+      description: 'Description for resource 1',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 1
+    },
+    {
+      resource_id: 2,
+      type: 'book',
+      title: 'Resource 2',
+      description: 'Description for resource 2',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 2
+    }
+  ]
+}
+
+function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
     algorithm: 'HS256',
@@ -201,7 +243,7 @@ function seedUsers(db, users) {
   return db.into('users').insert(preppedUsers)
 }
 
-function seedEvents(db, events){
+function seedEvents(db, events) {
   return db.into('events').insert(events)
 }
 
@@ -219,11 +261,16 @@ function seedContacts(db, users, contacts) {
   })
 }
 
+function seedResources(db, resources) {
+  return db.into('resources').insert(resources)
+}
+
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
   makeMaliciousUser,
   makeMaliciousEvent,
+  makeMaliciousResource,
   makeJobsArray,
   makeAuthHeader,
   cleanTables,
@@ -231,7 +278,9 @@ module.exports = {
   seedEvents,
   seedJobs,
   seedContacts,
+  seedResources,
   makeEventsArray,
-  makeContactsArray
+  makeContactsArray,
+  makeResourcesArray
 }
 

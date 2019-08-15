@@ -3,17 +3,17 @@ const config = require('../src/config')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-function makeKnexInstance(){
+function makeKnexInstance() {
   return knex({
     client: 'pg',
     connection: config.TEST_DB_URL,
   })
 }
 
-function makeUsersArray(){
-  return[
+function makeUsersArray() {
+  return [
     {
-      id: 1, 
+      id: 1,
       email: 'user1@email.com',
       first_name: 'First1',
       last_name: 'Last1',
@@ -31,7 +31,7 @@ function makeUsersArray(){
   ]
 }
 
-function makeMaliciousUser(){
+function makeMaliciousUser() {
   const maliciousUser = {
     id: 911,
     email: `email@email.com <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">`,
@@ -48,17 +48,48 @@ function makeMaliciousUser(){
     last_name: `Last <img src="https://url.to.file.which/does-not.exist">`,
     username: `username <img src="https://url.to.file.which/does-not.exist">`,
   }
-  return{
+  return {
     maliciousUser,
     expectedUser,
   }
 }
 
-function makeJobsArray(){
-  return[
+function makeMaliciousEvent() {
+  const maliciousEvent = {
+    event_id: 1,
+    event_name: 'Event 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    host: 'Host 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    city: 'City1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    state: 'State1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    address: 'Address 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    date: '2019-07-03T19:26:38.918Z',
+    url: 'http://event1.com',
+    description: 'Description for Event 1 <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    status: 'Will attend <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">',
+    user_id: 1
+  }
+
+  const expectedEvent = {
+    ...maliciousEvent,
+    event_name: 'Event 1 <img src="https://url.to.file.which/does-not.exist">',
+    host: 'Host 1 <img src="https://url.to.file.which/does-not.exist">',
+    city: 'City1 <img src="https://url.to.file.which/does-not.exist">',
+    state: 'State1 <img src="https://url.to.file.which/does-not.exist">',
+    address: 'Address 1 <img src="https://url.to.file.which/does-not.exist">',
+    description: 'Description for Event 1 <img src="https://url.to.file.which/does-not.exist">',
+    status: 'Will attend <img src="https://url.to.file.which/does-not.exist">',
+  }
+  return {
+    maliciousEvent,
+    expectedEvent
+  }
+}
+
+function makeJobsArray() {
+  return [
     {
       job_id: 1,
-      user_id: 1, 
+      user_id: 1,
       job_title: 'Engineer',
       company: 'Company A',
       city: 'New York City',
@@ -70,7 +101,7 @@ function makeJobsArray(){
     },
     {
       job_id: 2,
-      user_id: 1, 
+      user_id: 1,
       job_title: 'UI Designer',
       company: 'Company B',
       city: 'Austin',
@@ -84,7 +115,7 @@ function makeJobsArray(){
   ]
 }
 
-function makeEventsArray(){
+function makeEventsArray() {
   return [
     {
       event_id: 1,
@@ -145,7 +176,7 @@ function makeContactsArray(){
 }
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET){
-  const token = jwt.sign({ user_id: user.id}, secret, {
+  const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
     algorithm: 'HS256',
   })
@@ -167,7 +198,11 @@ function seedUsers(db, users) {
     ...user,
     password: bcrypt.hashSync(user.password, 1)
   }))
-  return db.into('users').insert(preppedUsers) 
+  return db.into('users').insert(preppedUsers)
+}
+
+function seedEvents(db, events){
+  return db.into('events').insert(events)
 }
 
 function seedJobs(db, users, jobs) {
@@ -188,10 +223,12 @@ module.exports = {
   makeKnexInstance,
   makeUsersArray,
   makeMaliciousUser,
+  makeMaliciousEvent,
   makeJobsArray,
   makeAuthHeader,
   cleanTables,
   seedUsers,
+  seedEvents,
   seedJobs,
   seedContacts,
   makeEventsArray,

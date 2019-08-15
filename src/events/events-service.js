@@ -1,8 +1,8 @@
 const xss = require('xss')
 
 const EventsService = {
-  getEvents(knex, user_id) {
-    return knex
+  getEvents(db, user_id) {
+    return db
       .from('events')
       .select(
         'event_id',

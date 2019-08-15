@@ -23,7 +23,7 @@ app.use(helmet())
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
-app.use('/api/jobs', savedJobRouter)
+app.use('/api/savedjobs', savedJobRouter)
 app.use('/api/events', eventsRouter)
 app.use('/api/contacts', contactsRouter)
 

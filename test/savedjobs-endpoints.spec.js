@@ -68,9 +68,7 @@ describe('Saved Jobs Endpoints', () => {
     context(`Given there are no jobs in the db`, () => {
       const testUsers = helpers.makeUsersArray()
       beforeEach('insert users', () => {
-        return db
-        .into('users')
-        .insert(testUsers)
+        return helpers.seedUsers(db, testUsers)
       })
 
       it(`responds with 200 and an empty list`, () => {
@@ -107,12 +105,10 @@ describe('Saved Jobs Endpoints', () => {
     
   describe(`POST /api/jobs`, () => {
     beforeEach('insert users', () => {
-      return db
-      .into('users')
-      .insert(testUsers)
+      return helpers.seedUsers(db, testUsers)
     })
 
-    const requiredFields = ['job_title', 'company', 'city', 'state', 'url']
+    const requiredFields = ['job_title', 'company', 'city', 'state', 'url',]
 
     requiredFields.forEach((field) => {
       const jobBody = {

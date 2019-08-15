@@ -115,6 +115,35 @@ function makeEventsArray(){
   ]
 }
 
+function makeContactsArray(){
+  return [
+    {
+      contact_id: 1,
+      contact_name: 'Contact 1',
+      job_title: 'Engineer',
+      company: 'Company1',
+      email: 'email@email.com',
+      linkedin: 'http://www.linkedin.com/person1',
+      comments: 'Contact 1 comments',
+      date_added: '2019-07-03T19:26:38.918Z',
+      connected: false,
+      user_id: 1
+    },
+    {
+      contact_id: 2,
+      contact_name: 'Contact 2',
+      job_title: 'Analyst',
+      company: 'Company2',
+      email: 'email2@email.com',
+      linkedin: 'http://www.linkedin.com/person2',
+      comments: 'Contact 2 comments',
+      date_added: '2019-07-03T19:26:38.918Z',
+      connected: true,
+      user_id: 2
+    }
+  ]
+}
+
 function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   const token = jwt.sign({ user_id: user.id}, secret, {
     subject: user.username,
@@ -126,6 +155,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET){
 function cleanTables(db) {
   return db.raw(
     `TRUNCATE
+      contacts,
       jobs,
       users
       RESTART IDENTITY CASCADE`
@@ -161,6 +191,13 @@ function seedJobs(db, users, jobs) {
   })
 }
 
+function seedContacts(db, users, contacts) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('contacts').insert(contacts)
+  })
+}
+
 function makeExpectedJob(users, job) {
   const user = users
     .find(user => user.id === job.user_id)
@@ -187,7 +224,9 @@ module.exports = {
   cleanTables,
   seedUsers,
   seedJobs,
+  seedContacts,
   makeExpectedJob,
-  makeEventsArray
+  makeEventsArray,
+  makeContactsArray
 }
 

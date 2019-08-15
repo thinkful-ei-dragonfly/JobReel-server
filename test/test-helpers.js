@@ -56,8 +56,8 @@ function makeMaliciousUser(){
 function makeJobsArray(){
   return[
     {
-      user_id: 1, 
       job_id: 1,
+      user_id: 1, 
       job_title: 'Engineer',
       company: 'Company A',
       city: 'New York City',
@@ -68,8 +68,8 @@ function makeJobsArray(){
       status: 'Interested',
     },
     {
-      user_id: 1, 
       job_id: 2,
+      user_id: 1, 
       job_title: 'UI Designer',
       company: 'Company B',
       city: 'Austin',
@@ -100,7 +100,13 @@ function cleanTables(db) {
 }
 
 function seedUsers(db, users) {
-  return db.into('users').insert(users)
+  const preppedUsers = users.map(user => ({
+    ...user,
+    password: bcrypt.hashSync(user.password, 1)
+  }))
+  return db.transaction(async trx => {
+    await trx.into('users').insert(preppedUsers)
+  })
 }
 
 function seedJobs(db, users, jobs) {

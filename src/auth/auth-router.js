@@ -24,25 +24,28 @@ authRouter
       )
       
 
-      if (!dbUser)
+      if (!dbUser){
         return res.status(400).json({
           error: 'Incorrect username or password',
         })
+      }
 
       const compareMatch = await AuthService.comparePasswords(
         loginUser.password,
         dbUser.password
       )
 
-      if (!compareMatch)
+
+      if (!compareMatch){
         return res.status(400).json({
           error: 'Incorrect username or password',
         })
+      }
 
       const sub = dbUser.username
       const payload = {
         user_id: dbUser.id,
-        name: dbUser.username,
+        username: dbUser.username,
       }
       res.send({
         authToken: AuthService.createJwt(sub, payload),
@@ -56,7 +59,7 @@ authRouter
     const sub = req.user.username
     const payload = {
       user_id: req.user.id,
-      name: req.user.username,
+      username: req.user.username,
     }
     res.send({
       authToken: AuthService.createJwt(sub, payload),

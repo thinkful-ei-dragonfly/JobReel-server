@@ -1,11 +1,12 @@
 const knex = require('knex')
+const config = require('../src/config')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 function makeKnexInstance(){
   return knex({
     client: 'pg',
-    connection: process.env.TEST_DB_URL,
+    connection: config.TEST_DB_URL,
   })
 }
 
@@ -78,12 +79,44 @@ function makeJobsArray(){
       url: 'http://www.google.com',
       description: 'UI job',
       status: 'Interested',
+
     }
   ]
 }
 
-function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
-  const token = jwt.sign({ user_id: user.id }, secret, {
+function makeEventsArray(){
+  return [
+    {
+      event_id: 1,
+      event_name: 'Event 1',
+      host: 'Host 1',
+      city: 'City1',
+      state: 'State1',
+      address: 'Address 1',
+      date: '2019-07-03T19:26:38.918Z',
+      url: 'http://event1.com',
+      description: 'Description for Event 1',
+      status: 'Will attend',
+      user_id: 1
+    },
+    {
+      event_id: 2,
+      event_name: 'Event 2',
+      host: 'Host 2',
+      city: 'City2',
+      state: 'State2',
+      address: 'Address 2',
+      date: '2019-07-03T19:26:38.918Z',
+      url: 'http://event2.com',
+      description: 'Description for Event 2',
+      status: 'Interested',
+      user_id: 2
+    }
+  ]
+}
+
+function makeAuthHeader(user, secret = process.env.JWT_SECRET){
+  const token = jwt.sign({ user_id: user.id}, secret, {
     subject: user.username,
     algorithm: 'HS256',
   })
@@ -99,15 +132,27 @@ function cleanTables(db) {
   );
 }
 
+// function cleanTables(db){
+//   return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
+// }
+
 function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
     ...user,
     password: bcrypt.hashSync(user.password, 1)
   }))
-  return db.transaction(async trx => {
-    await trx.into('users').insert(preppedUsers)
-  })
+  return db.into('users').insert(preppedUsers) 
 }
+
+// function seedUsers(db, users) { 
+//   const preppedUsers = users.map(user => ({
+//     ...user,
+//     password: bcrypt.hashSync(user.password, 1)
+//   }))
+//   return db.transaction(async trx => {
+//     await trx.into('users').insert(preppedUsers)
+//   })
+// }
 
 function seedJobs(db, users, jobs) {
   return db.transaction(async trx => {
@@ -142,6 +187,7 @@ module.exports = {
   cleanTables,
   seedUsers,
   seedJobs,
-  makeExpectedJob
+  makeExpectedJob,
+  makeEventsArray
 }
 

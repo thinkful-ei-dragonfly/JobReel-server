@@ -1,0 +1,18 @@
+language: node_js
+node_js: node
+
+services:
+- postgresql
+
+before_script:
+- psql -U postgres -c 'create database "jobreel-test";'
+- npm run migrate
+
+env:
+  global:
+    - MIGRATION_DB_HOST=localhost
+    - MIGRATION_DB_PORT=5432
+    - MIGRATION_DB_NAME=jobreel-test
+    - MIGRATION_DB_USER=postgres
+    - JWT_SECRET=jobReel-jwt-secret
+    - JWT_EXPIRY=3h

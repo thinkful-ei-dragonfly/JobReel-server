@@ -70,11 +70,12 @@ describe('Auth Endpoints', function () {
     it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
       const userValidCreds = {
         username: testUser.username,
-        password: testUser.password,
+        password: testUser.password
       }
+
       const expectedToken = jwt.sign(
-        { user_id: testUser.id, name: testUser.username },
-        config.JWT_SECRET,
+        { user_id: testUser.id, username: testUser.username },
+       config.JWT_SECRET,
         {
           subject: testUser.username,
           expiresIn: config.JWT_EXPIRY,
@@ -103,8 +104,8 @@ describe('Auth Endpoints', function () {
 
     it(`responds 200 and JWT auth token using secret`, () => {
       const expectedToken = jwt.sign(
-        { user_id: testUser.id, name: testUser.username },
-        config.JWT_SECRET,
+        { user_id: testUser.id, username: testUser.username },
+       config.JWT_SECRET,
         {
           subject: testUser.username,
           expiresIn: config.JWT_EXPIRY,

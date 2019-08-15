@@ -23,7 +23,7 @@ const JobService = {
     .insert(newJob)
     .into('jobs')
     .returning('*')
-    .then(([jobs]) => jobs)
+    .then(([job]) => job)
   },
 
   serializeJob(job){

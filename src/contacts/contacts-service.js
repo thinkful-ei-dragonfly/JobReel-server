@@ -18,6 +18,29 @@ const ContactService = {
       )
       .where('user_id', user_id)
   },
+
+  insertContact(db, newContact){
+    return db
+    .insert(newContact)
+    .into('contacts')
+    .returning('*')
+    .then(([contact]) => contact)
+  },
+
+  serializeContact(contact){
+    return {
+      contact_id: contact.contact_id,
+      contact_name: xss(contact.contact_name),
+      job_title: xss(contact.job_title),
+      company: xss(contact.company),
+      email: xss(contact.email),
+      linkedin: contact.linkedin,
+      comments: contact.comments,
+      date_added: contact.date_added,
+      connected: contact.connected,
+      user_id: contact.user_id
+    }
+  }
 }
 
 module.exports = ContactService

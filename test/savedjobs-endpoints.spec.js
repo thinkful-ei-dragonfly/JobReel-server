@@ -25,7 +25,7 @@ describe('Saved Jobs Endpoints', () => {
       const testJobs = helpers.makeJobsArray()
       const testUsers  = helpers.makeUsersArray()
 
-      beforeEach('Seed jobs', () =>
+      beforeEach('insert jobs', () =>
       helpers.seedJobs(
         db,
         testUsers,
@@ -81,7 +81,7 @@ describe('Saved Jobs Endpoints', () => {
     })
 
     context(`Given there are jobs in the db`, () => {
-      beforeEach('Seed jobs', () =>
+      beforeEach('insert jobs', () =>
       helpers.seedJobs(
         db,
         testUsers,

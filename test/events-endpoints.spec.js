@@ -35,7 +35,7 @@ describe('Events Endpoints', () => {
           })
       })
 
-      it(`responds 401 'Unauthorized request' when invalid JWT secrete`, () => {
+      it(`responds 401 'Unauthorized request' when invalid JWT secret`, () => {
         const validUser = testUsers[0]
         const invalidSecret = 'bad-secret'
 
@@ -67,6 +67,7 @@ describe('Events Endpoints', () => {
 
       it(`responds with 200 and an empty list`, () => {
         const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+        
         return supertest(app)
           .get(`/api/events`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
@@ -128,7 +129,7 @@ describe('Events Endpoints', () => {
     })
   })
 
-  describe(`POST /api/events/`, () => {
+  describe(`POST /api/events`, () => {
     const testUsers = helpers.makeUsersArray()
 
     beforeEach('insert users', () => {

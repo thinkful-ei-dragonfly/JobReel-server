@@ -20,7 +20,7 @@ describe('Saved Jobs Endpoints', () => {
 
   afterEach('cleanup', () => helpers.cleanTables(db))
 
-  describe(`GET /api/jobs`, () => {
+  describe(`GET /api/savedjobs`, () => {
     context(`Given no authorization`, () => {
       const testJobs = helpers.makeJobsArray()
       const testUsers  = helpers.makeUsersArray()
@@ -35,7 +35,7 @@ describe('Saved Jobs Endpoints', () => {
 
       it(`responds 401 'Missing bearer token' when no bearer token`, () => {
         return supertest(app)
-        .get(`/api/jobs`)
+        .get(`/api/savedjobs`)
         .expect(401, {
           error: 'Missing bearer token'
         })
@@ -46,7 +46,7 @@ describe('Saved Jobs Endpoints', () => {
         const invalidSecret = 'bad-secret'
 
         return supertest(app)
-        .get(`/api/jobs`)
+        .get(`/api/savedjobs`)
         .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
         .expect(401, {
           error: 'Unauthorized request'
@@ -57,7 +57,7 @@ describe('Saved Jobs Endpoints', () => {
         const invalidUser = { username: 'NonExistent', id: 1}
 
         return supertest(app)
-        .get(`/api/jobs`)
+        .get(`/api/savedjobs`)
         .set('Authorization', helpers.makeAuthHeader(invalidUser))
         .expect(401, {
           error: 'Unauthorized request'
@@ -74,7 +74,7 @@ describe('Saved Jobs Endpoints', () => {
       it(`responds with 200 and an empty list`, () => {
         const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         return supertest(app)
-        .get(`/api/jobs`)
+        .get(`/api/savedjobs`)
         .set('Authorization', helpers.makeAuthHeader(validCreds))
         .expect(200, {jobs: []})
       })
@@ -96,14 +96,14 @@ describe('Saved Jobs Endpoints', () => {
           ));
 
         return supertest(app)
-        .get('/api/jobs')
+        .get('/api/savedjobs')
         .set('Authorization', helpers.makeAuthHeader(testUser))
         .expect(200, {jobs: expectedJobs})
         })
       })
     })
     
-  describe(`POST /api/jobs`, () => {
+  describe(`POST /api/savedjobs`, () => {
     beforeEach('insert users', () => {
       return helpers.seedUsers(db, testUsers)
     })
@@ -123,7 +123,7 @@ describe('Saved Jobs Endpoints', () => {
         delete jobBody[field]
 
         return supertest(app)
-          .post('/api/jobs')
+          .post('/api/savedjobs')
           .send(jobBody)
           .set('Authorization', helpers.makeAuthHeader(testUser))
           .expect(400, {
@@ -144,7 +144,7 @@ describe('Saved Jobs Endpoints', () => {
       }
 
       return supertest(app)
-      .post('/api/jobs')
+      .post('/api/savedjobs')
       .set('Authorization', helpers.makeAuthHeader(testUser))
       .send(invalidURL)
       .expect(400, {
@@ -163,7 +163,7 @@ describe('Saved Jobs Endpoints', () => {
       }
 
       return supertest(app)
-      .post('/api/jobs')
+      .post('/api/savedjobs')
       .set('Authorization', helpers.makeAuthHeader(testUser))
       .send(invalidState)
       .expect(400, {
@@ -182,7 +182,7 @@ describe('Saved Jobs Endpoints', () => {
       }
 
       return supertest(app)
-        .post('/api/jobs')
+        .post('/api/savedjobs')
         .set('Authorization', helpers.makeAuthHeader(testUser))
         .send(newJob)
         .expect(201)
@@ -196,7 +196,7 @@ describe('Saved Jobs Endpoints', () => {
           expect(res.body.state).to.eql(newJob.state)
           expect(res.body.url).to.eql(newJob.url)
           expect(res.body.description).to.eql(newJob.description)
-          expect(res.headers.location).to.eql(`/api/jobs/${res.body.job_id}`)
+          expect(res.headers.location).to.eql(`/api/savedjobs/${res.body.job_id}`)
           const expectedDate = new Date().toLocaleString();
           const actualDate = new Date(res.body.date_added).toLocaleString();
           expect(actualDate).to.eql(expectedDate);

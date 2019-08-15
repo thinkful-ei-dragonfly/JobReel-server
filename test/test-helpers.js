@@ -146,7 +146,36 @@ function makeEventsArray() {
   ]
 }
 
-function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+function makeContactsArray(){
+  return [
+    {
+      contact_id: 1,
+      contact_name: 'Contact 1',
+      job_title: 'Engineer',
+      company: 'Company1',
+      email: 'email@email.com',
+      linkedin: 'http://www.linkedin.com/person1',
+      comments: 'Contact 1 comments',
+      date_added: '2019-07-03T19:26:38.918Z',
+      connected: false,
+      user_id: 1
+    },
+    {
+      contact_id: 2,
+      contact_name: 'Contact 2',
+      job_title: 'Analyst',
+      company: 'Company2',
+      email: 'email2@email.com',
+      linkedin: 'http://www.linkedin.com/person2',
+      comments: 'Contact 2 comments',
+      date_added: '2019-07-03T19:26:38.918Z',
+      connected: true,
+      user_id: 2
+    }
+  ]
+}
+
+function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
     algorithm: 'HS256',
@@ -157,15 +186,12 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 function cleanTables(db) {
   return db.raw(
     `TRUNCATE
+      contacts,
       jobs,
       users
       RESTART IDENTITY CASCADE`
   );
 }
-
-// function cleanTables(db){
-//   return db.raw('TRUNCATE users RESTART IDENTITY CASCADE')
-// }
 
 function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
@@ -179,16 +205,6 @@ function seedEvents(db, events){
   return db.into('events').insert(events)
 }
 
-// function seedUsers(db, users) { 
-//   const preppedUsers = users.map(user => ({
-//     ...user,
-//     password: bcrypt.hashSync(user.password, 1)
-//   }))
-//   return db.transaction(async trx => {
-//     await trx.into('users').insert(preppedUsers)
-//   })
-// }
-
 function seedJobs(db, users, jobs) {
   return db.transaction(async trx => {
     await seedUsers(trx, users)
@@ -196,21 +212,11 @@ function seedJobs(db, users, jobs) {
   })
 }
 
-function makeExpectedJob(users, job) {
-  const user = users
-    .find(user => user.id === job.user_id)
-
-  return {
-    job_id: job.job_id,
-    job_title: job.job_title,
-    company: job.company,
-    city: job.city,
-    state: job.state,
-    date_added: job.date_added,
-    url: job.url,
-    description: job.description,
-    status: job.status,
-  }
+function seedContacts(db, users, contacts) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('contacts').insert(contacts)
+  })
 }
 
 module.exports = {
@@ -224,7 +230,8 @@ module.exports = {
   seedUsers,
   seedEvents,
   seedJobs,
-  makeExpectedJob,
-  makeEventsArray
+  seedContacts,
+  makeEventsArray,
+  makeContactsArray
 }
 

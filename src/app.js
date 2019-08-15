@@ -9,6 +9,8 @@ const usersRouter = require('./users/users-router')
 const savedJobRouter = require('./savedjobs/savedjobs-router')
 const eventsRouter = require('./events/events-router')
 const resourcesRouter = require('./resources/resources-router')
+const contactsRouter = require('./contacts/contacts-router')
+
 
 const app = express()
 
@@ -26,6 +28,7 @@ app.use('/api/users', usersRouter)
 app.use('/api/savedjobs', savedJobRouter)
 app.use('/api/events', eventsRouter)
 app.use('/api/resources', resourcesRouter)
+app.use('/api/contacts', contactsRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello, world!')

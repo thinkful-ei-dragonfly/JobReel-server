@@ -13,7 +13,8 @@ const JobService = {
         'date_added',
         'url',
         'description',
-        'status'
+        'status',
+        'user_id'
       )
       .where('user_id', user_id)
   },
@@ -23,7 +24,7 @@ const JobService = {
     .insert(newJob)
     .into('jobs')
     .returning('*')
-    .then(([jobs]) => jobs)
+    .then(([job]) => job)
   },
 
   serializeJob(job){

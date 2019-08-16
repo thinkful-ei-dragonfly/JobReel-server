@@ -42,12 +42,24 @@ const EventsService = {
     }
   },
 
-  getById(db, event_id) {
+  getById(db, id) {
     return db
       .from('events')
       .select('*')
-      .where('event_id', event_id)
+      .where('event_id', id)
       .first()
+  },
+
+  deleteEvent(db, id) {
+    return db('events')
+      .where('event_id', id)
+      .delete()
+  },
+  
+  updateEvent(db, id, newEventFields) {
+    return db('events')
+      .where('event_id', id)
+      .update(newEventFields)
   }
 
 }

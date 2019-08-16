@@ -128,7 +128,61 @@ eventsRouter
       next(error)
     }
   })
+  .delete('/:event_id', async (req, res, next) => {
+    const { event_id } = req.params
+    EventsService.deleteEvent(
+      req.app.get('db'),
+      event_id
+    )
+      .then(numRowsAffected => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
+  .patch('/:event_id', jsonParser, (req, res, next) => {
+    const { event_id } = req.params
+    const { event_name, host, city, state, address, date, url, description, status } = req.body
+    const updatedEvent = { event_name, host, city, state, address, date, url, description, status }
 
 
+    const numberOfValues = Object.values(updatedEvent).filter(Boolean).length
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message: `Request body must content either event_name, host, city, state, address, date, url, description, or status`
+        }
+      })
+    }
+
+    const validateUrl = ValidationService.validateUrl(url)
+
+    if(!validateUrl){
+      return res
+      .status(400)
+      .json({
+        error: 'Not a valid URL'
+      })
+    }
+    
+    const validateState = ValidationService.validateState(state)
+
+    if(!validateState){
+      return res
+      .status(400)
+      .json({
+        error: 'Not a valid state code'
+      })
+    }
+
+    EventsService.updateEvent(
+      req.app.get('db'),
+      event_id,
+      updatedEvent
+    )
+    .then(numRowsAffected => {
+      res.status(204).end()
+    })
+    .catch(next)
+  })
 
   module.exports = eventsRouter

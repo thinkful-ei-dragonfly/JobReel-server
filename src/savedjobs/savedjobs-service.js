@@ -19,12 +19,26 @@ const JobService = {
       .where('user_id', user_id)
   },
 
+  getById(db, job_id){
+    return db
+    .from('jobs')
+    .select('*')
+    .where('job_id', job_id)
+    .first()
+  },
+
   insertJob(db, newJob){
     return db
     .insert(newJob)
     .into('jobs')
     .returning('*')
     .then(([job]) => job)
+  },
+
+  deleteJob(db, job_id){
+    return db('jobs')
+    .where({ job_id })
+    .delete()
   },
 
   serializeJob(job){

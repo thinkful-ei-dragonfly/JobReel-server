@@ -144,7 +144,6 @@ eventsRouter
     const { event_name, host, city, state, address, date, url, description, status } = req.body
     const updatedEvent = { event_name, host, city, state, address, date, url, description, status }
 
-
     const numberOfValues = Object.values(updatedEvent).filter(Boolean).length
     if (numberOfValues === 0) {
       return res.status(400).json({
@@ -154,24 +153,26 @@ eventsRouter
       })
     }
 
-    const validateUrl = ValidationService.validateUrl(url)
-
-    if(!validateUrl){
-      return res
-      .status(400)
-      .json({
-        error: 'Not a valid URL'
-      })
+    if(url){
+      const validateUrl = ValidationService.validateUrl(url)
+      if(!validateUrl){
+        return res
+        .status(400)
+        .json({
+          error: 'Not a valid URL'
+        })
+      }
     }
     
-    const validateState = ValidationService.validateState(state)
-
-    if(!validateState){
-      return res
-      .status(400)
-      .json({
-        error: 'Not a valid state code'
-      })
+    if(state){
+      const validateState = ValidationService.validateState(state)
+      if(!validateState){
+        return res
+        .status(400)
+        .json({
+          error: 'Not a valid state code'
+        })
+      }
     }
 
     EventsService.updateEvent(

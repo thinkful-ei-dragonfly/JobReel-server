@@ -238,31 +238,27 @@ describe('Events Endpoints', () => {
   })
 
   describe('GET /api/events/:event_id', () => {
-    const testUsers = helpers.makeUsersArray()
-    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
-
-    beforeEach('insert users', () => {
-      return helpers.seedUsers(db, testUsers)
-    })
-
+    
     context(`Given no events`, () => {
-      it(`responds 404 whe event doesn't exist`, () => {
+      
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds 404 when event doesn't exist`, () => {
         return supertest(app)
           .get(`/api/events/123`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
           .expect(404, {
-            error: { message: `Event Not Found` }
+            error: `Event Not Found` 
           })
       })
     })
 
     context('Given there are events in the database', () => {
-      const testEvents = helpers.makeEventsArray()
 
       beforeEach('insert events', () => {
-        return db
-          .into('events')
-          .insert(testEvents)
+        return helpers.seedEvents(db, testUsers, testEvents)
       })
 
       it('responds with 200 and the specified event', () => {
@@ -291,7 +287,7 @@ describe('Events Endpoints', () => {
           .delete(`/api/events/123`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
           .expect(404, {
-            error: { message: `Event Not Found` }
+            error: `Event Not Found` 
           })
       })
     })
@@ -336,7 +332,7 @@ describe('Events Endpoints', () => {
         return supertest(app)
           .patch(`/api/events/${eventId}`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(404, { error: { message: `Event Not Found` } })
+          .expect(404, { error: `Event Not Found` } )
       })
     })
 
@@ -352,11 +348,11 @@ describe('Events Endpoints', () => {
       it('responds with 204 and updates the event', () => {
         const idToUpdate = 2
         const updatedEvent = {
-            event_name: "Event 100",
-            host: "Host 100",
-            city: "City 100",
+          event_name: "Event 100",
+          host: "Host 100",
+          city: "City 100",
         }
-  
+
         const expectedEvent = {
           ...testEvents[idToUpdate - 1],
           ...updatedEvent
@@ -381,9 +377,8 @@ describe('Events Endpoints', () => {
           .set('Authorization', helpers.makeAuthHeader(validCreds))
           .send({ irrelevantField: 'foo' })
           .expect(400, {
-            error: {
-              message: `Request body must content either event_name, host, city, state, address, date, url, description, or status`
-            }
+            error:  `Request body must contain either event_name, host, city, state, address, date, url, description, or status`
+            
           })
       })
 
@@ -419,7 +414,7 @@ describe('Events Endpoints', () => {
         const invalidUrl = {
           url: 'www.invalid.com',
         }
-  
+
         return supertest(app)
           .patch(`/api/events/${idToUpdate}`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
@@ -428,14 +423,14 @@ describe('Events Endpoints', () => {
             error: 'Not a valid URL'
           })
       })
-  
+
       it(`responds with 400 and error message about invalid state code`, () => {
         const idToUpdate = 2
         const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         const invalidState = {
           state: 'Unknown State',
         }
-  
+
         return supertest(app)
           .patch(`/api/events/${idToUpdate}`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))

@@ -19,29 +19,35 @@ const JobService = {
       .where('user_id', user_id)
   },
 
-  getById(db, job_id){
+  getById(db, job_id) {
     return db
-    .from('jobs')
-    .select('*')
-    .where('job_id', job_id)
-    .first()
+      .from('jobs')
+      .select('*')
+      .where('job_id', job_id)
+      .first()
   },
 
-  insertJob(db, newJob){
+  insertJob(db, newJob) {
     return db
-    .insert(newJob)
-    .into('jobs')
-    .returning('*')
-    .then(([job]) => job)
+      .insert(newJob)
+      .into('jobs')
+      .returning('*')
+      .then(([job]) => job)
   },
 
-  deleteJob(db, job_id){
+  deleteJob(db, job_id) {
     return db('jobs')
-    .where({ job_id })
-    .delete()
+      .where({ job_id })
+      .delete()
   },
 
-  serializeJob(job){
+  updateJob(db, job_id, newJobFields) {
+    return db('jobs')
+      .where('job_id', job_id)
+      .update(newJobFields)
+  },
+
+  serializeJob(job) {
     return {
       job_id: job.job_id,
       job_title: xss(job.job_title),

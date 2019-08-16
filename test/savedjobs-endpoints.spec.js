@@ -219,6 +219,42 @@ describe('Saved Jobs Endpoints', () => {
     })
   })
 
+  describe('GET /api/savedjobs/:job_id', () => {
+
+    context(`Given no jobs`, () => {
+
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds 404 when the job doesn't exist`, () => {
+        return supertest(app)
+          .get(`/api/savedjobs/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Job doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are jobs in the database', () => {
+
+      beforeEach('insert jobs', () => {
+        return helpers.seedJobs(db, testUsers, testJobs)
+      })
+
+      it('responds with 200 and the specified job', () => {
+        const jobId = 2
+        const expectedJob = testJobs[jobId - 1]
+
+        return supertest(app)
+          .get(`/api/savedjobs/${jobId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, expectedJob)
+      })
+    })
+  })
+
   describe(`DELETE /api/savedjobs/:job_id`, () => {
     context('Given no jobs', () => {
       beforeEach('insert users', () => {
@@ -237,7 +273,7 @@ describe('Saved Jobs Endpoints', () => {
 
     context('Given there are jobs in the database', () => {
       beforeEach('insert jobs', () => {
-            return helpers.seedJobs(db, testUsers, testJobs)
+        return helpers.seedJobs(db, testUsers, testJobs)
       })
 
       it('responds with 204 and removes the job', () => {
@@ -258,6 +294,123 @@ describe('Saved Jobs Endpoints', () => {
   })
 
   describe(`PATCH /api/savedjobs/:job_id`, () => {
+    context('Given no jobs', () => {
 
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 404`, () => {
+        const jobId = 1
+        return supertest(app)
+          .patch(`/api/savedjobs/${jobId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Job doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are jobs in the database', () => {
+
+      beforeEach('insert jobs', () => {
+        return helpers.seedJobs(db, testUsers, testJobs)
+      })
+
+      it('responds with 204 and updates the job', () => {
+        const idToUpdate = 2
+        const updateJob = {
+          user_id: 1,
+          job_title: 'New Job',
+          company: 'Company C',
+          city: 'Boston',
+          state: 'MA',
+          date_added: '2019-08-14T17:18:19.306Z',
+          url: 'http://www.facebook.com',
+        }
+        const expectedJob = {
+          ...testJobs[idToUpdate - 1],
+          ...updateJob
+        }
+        return supertest(app)
+          .patch(`/api/savedjobs/${idToUpdate}`)
+          .send(updateJob)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/savedjobs/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedJob)
+          )
+      })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 2
+        return supertest(app)
+        .patch(`/api/savedjobs/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({ irrelevantField: 'foo' })
+        .expect(400, {
+          error: `Request body must contain either 'job_title', 'company', 'city', 'state', 'date_added', 'url', or 'description'`
+        })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updatedJob = {
+          job_title: 'New Job title'
+        }
+        const expectedJob = {
+          ...testJobs[idToUpdate - 1],
+          ...updatedJob
+        }
+
+        return supertest(app)
+        .patch(`/api/savedjobs/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({
+          ...updatedJob,
+          fieldToIgnore: 'should not be in GET response'
+        })
+        .expect(204)
+        .then(() => 
+        supertest(app)
+        .get(`/api/savedjobs/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(expectedJob)
+        )
+      })
+
+      it(`responds with 400 and error message about invalid url`, () => {
+        const idToUpdate = 2
+        const invalidUrl = {
+          url: 'www.invalid.com'
+        }
+
+        return supertest(app)
+        .patch(`/api/savedjobs/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send(invalidUrl)
+        .expect(400, {
+          error: 'Not a valid URL'
+        })
+      })
+
+      it(`responds with 400 and error message about invalid state code`, () => {
+        const idToUpdate = 2
+        const invalidState = {
+          state: 'Unknown State',
+        }
+
+        return supertest(app)
+        .patch(`/api/savedjobs/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send(invalidState)
+        .expect(400, {
+          error: 'Not a valid state code'
+        })
+      })
+    })
   })
 })

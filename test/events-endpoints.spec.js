@@ -142,12 +142,12 @@ describe('Events Endpoints', () => {
         'host',
         'city',
         'state',
-        'address',
+        // 'address',
         'date',
         'url',
-        'description',
-        'status',
-        'user_id'
+        // 'description',
+        // 'status',
+        // 'user_id'
       ]
 
     requiredFields.forEach(field => {
@@ -346,7 +346,7 @@ describe('Events Endpoints', () => {
     })
   })
 
-  describe.only(`PATCH /api/events/:event_id`, () => {
+  describe(`PATCH /api/events/:event_id`, () => {
     const testUsers = helpers.makeUsersArray()
     const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
 
@@ -364,7 +364,7 @@ describe('Events Endpoints', () => {
       })
     })
 
-    context.only('Given there are events in the database', () => {
+    context('Given there are events in the database', () => {
       const testEvents = helpers.makeEventsArray()
 
       beforeEach('insert events', () => {

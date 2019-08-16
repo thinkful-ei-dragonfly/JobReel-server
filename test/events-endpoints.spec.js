@@ -260,4 +260,89 @@ describe('Events Endpoints', () => {
         })
     })
   })
+
+  describe('GET /api/events/:event_id', () => {
+    const testUsers = helpers.makeUsersArray()
+    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
+    beforeEach('insert users', () => {
+      return helpers.seedUsers(db, testUsers)
+    })
+
+    context(`Given no events`, () => {
+      it(`responds 404 whe event doesn't exist`, () => {
+        return supertest(app)
+          .get(`/api/events/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: { message: `Event Not Found` }
+          })
+      })
+    })
+
+    context('Given there are events in the database', () => {
+      const testEvents = helpers.makeEventsArray()
+
+      beforeEach('insert events', () => {
+        return db
+          .into('events')
+          .insert(testEvents)
+      })
+
+      it('responds with 200 and the specified event', () => {
+        const eventId = 2
+        const expectedEvent = testEvents[eventId - 1]
+
+        return supertest(app)
+          .get(`/api/events/${eventId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, expectedEvent)
+      })
+    })
+  })
+
+  describe.only('DELETE /api/events/:id', () => {
+    const testUsers = helpers.makeUsersArray()
+    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
+    beforeEach('insert users', () => {
+      return helpers.seedUsers(db, testUsers)
+    })
+
+    context(`Given no events`, () => {
+      it(`responds 404 when event doesn't exist`, () => {
+        return supertest(app)
+          .delete(`/api/events/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: { message: `Event Not Found` }
+          })
+      })
+    })
+
+    context('Given there are events in the database', () => {
+      const testEvents = helpers.makeEventsArray()
+
+      beforeEach('insert events', () => {
+        return db
+          .into('events')
+          .insert(testEvents)
+      })
+
+      it('removes the event by ID from the store', () => {
+        const idToRemove = 2
+        const expectedEvents = testEvents.filter(event => event.event_id !== idToRemove)
+        return supertest(app)
+          .delete(`/api/events/${idToRemove}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/events`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedEvents)
+          )
+      })
+    })
+  })
 })

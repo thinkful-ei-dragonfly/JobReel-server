@@ -1,5 +1,4 @@
 const express = require('express')
-const JobsService = require('./jobs-service')
 const jobsRouter = express.Router()
 const unirest = require('unirest')
 const config = require('../config')

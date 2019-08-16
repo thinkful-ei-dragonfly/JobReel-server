@@ -196,6 +196,35 @@ function makeContactsArray() {
   ]
 }
 
+function makeCompaniesArray(){
+  return [
+    {
+      company_id: 1,
+      company_name: 'Company 1',
+      city: 'City',
+      state: 'AZ',
+      industry: 'Tech',
+      website: 'http://www.company.com/company1',
+      description: 'Company 1 Description',
+      contact: 'Contact 1',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 1
+    },
+    {
+      company_id: 2,
+      company_name: 'Company 2',
+      city: 'City',
+      state: 'FL',
+      industry: 'Auto',
+      website: 'http://www.company.com/company2',
+      description: 'Company 2 Description',
+      contact: 'Contact 2',
+      date_added: '2019-07-03T19:26:38.918Z',
+      user_id: 1
+    }
+  ]
+}
+
 function makeResourcesArray() {
   return [
     {
@@ -287,7 +316,8 @@ function cleanTables(db) {
   )
 }
 
-function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+
+function makeAuthHeader(user, secret = process.env.JWT_SECRET){
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
     algorithm: 'HS256',
@@ -298,6 +328,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 function cleanTables(db) {
   return db.raw(
     `TRUNCATE
+      companies,
       contacts,
       jobs,
       users
@@ -331,6 +362,13 @@ function seedContacts(db, users, contacts) {
   })
 }
 
+function seedCompanies(db, users, companies) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('companies').insert(companies)
+  })
+}
+
 function seedResources(db, resources) {
   return db.into('resources').insert(resources)
 }
@@ -348,6 +386,7 @@ module.exports = {
   seedEvents,
   seedJobs,
   seedContacts,
+  seedCompanies,
   seedResources,
   makeEventsArray,
   makeContactsArray,
@@ -355,5 +394,7 @@ module.exports = {
   makeExpectedAuthenticJobs,
   makeExpectedGitHubJobs,
   makeJobsFixtures,
+  makeCompaniesArray,
+  makeResourcesArray
 }
 

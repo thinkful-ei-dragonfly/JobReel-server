@@ -36,7 +36,8 @@ eventsRouter
   .post('/', jsonParser, async (req, res, next) => {
     const { event_name, host, city, state, address, date, url, description, status } = req.body
 
-    for(const field of ['event_name', 'host', 'city', 'state', 'address', 'date', 'url', 'description', 'status', 'user_id'])
+    // for(const field of ['event_name', 'host', 'city', 'state', 'address', 'date', 'url', 'description', 'status', 'user_id'])
+    for(const field of ['event_name', 'host', 'city', 'state', 'date', 'url'])
     if(!req.body[field]){
       return res
       .status(400)
@@ -95,7 +96,37 @@ eventsRouter
     catch(error){
       next(error)
     }
-
   })
+
+  eventsRouter
+  .get('/:event_id', async (req, res, next) => {
+    try {
+      let events = await EventsService.getEvents(
+        req.app.get('db'),
+        req.user.id
+      )
+      console.log(events)
+      let filteredEvent = events.filter(event => event.user_id == req.user.id)
+      console.log(filteredEvent)
+      if(!filteredEvent){
+        return res.status(404).json({
+          error: { message: `Event Not Found` }
+        })
+      }
+      // event = serializeEvent(event)
+
+      res
+      .status(200)
+      .json(
+        filteredEvent
+      )
+      next()
+    }
+    catch (error) {
+      next(error)
+    }
+  })
+
+
 
   module.exports = eventsRouter

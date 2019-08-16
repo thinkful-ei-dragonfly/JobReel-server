@@ -237,9 +237,7 @@ describe('Saved Jobs Endpoints', () => {
 
     context('Given there are jobs in the database', () => {
       beforeEach('insert jobs', () => {
-        
             return helpers.seedJobs(db, testUsers, testJobs)
-          
       })
 
       it('responds with 204 and removes the job', () => {

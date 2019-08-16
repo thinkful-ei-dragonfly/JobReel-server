@@ -6,7 +6,7 @@ describe('Jobs Endpoints', function () {
 
     const { expectedAuthenticJobs, expectedGitHubJobs } = helpers.makeJobsFixtures()
 
-    describe.only(`Getting jobsfrom /api/jobs/authentic`, () => {
+    describe(`Getting jobsfrom /api/jobs/authentic`, () => {
         context(`Given no jobs`, () => {
             it(`responds with 200 and an empty list`, () => {
                 return supertest(app)
@@ -33,7 +33,7 @@ describe('Jobs Endpoints', function () {
             })
         })
     })
-    describe.only(`Getting jobs from /api/jobs/github`, () => {
+    describe(`Getting jobs from /api/jobs/github`, () => {
         context(`Given no jobs`, () => {
             it(`responds with 200 and an empty list`, () => {
                 return supertest(app)

@@ -4,6 +4,10 @@ const helpers = require('./test-helpers')
 describe('Events Endpoints', () => {
   let db
 
+  const testEvents = helpers.makeEventsArray()
+  const testUsers = helpers.makeUsersArray()
+  const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
   before('make knex instance', () => {
     db = helpers.makeKnexInstance()
     app.set('db', db)
@@ -17,14 +21,8 @@ describe('Events Endpoints', () => {
   describe(`GET /api/events/`, () => {
 
     context(`Given no authorization`, () => {
-      const testEvents = helpers.makeEventsArray()
-      const testUsers = helpers.makeUsersArray()
-
       beforeEach('insert events', () => {
-        return helpers.seedUsers(db, testUsers)
-          .then(() => {
-            return helpers.seedEvents(db, testEvents)
-          })
+        return helpers.seedEvents(db, testUsers, testEvents)
       })
 
       it(`responds 401 'Missing bearer token' when no bearer token`, () => {
@@ -60,14 +58,11 @@ describe('Events Endpoints', () => {
     })
 
     context('Given no events', () => {
-      const testUsers = helpers.makeUsersArray()
       beforeEach('insert users', () => {
         return helpers.seedUsers(db, testUsers)
       })
 
       it(`responds with 200 and an empty list`, () => {
-        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
-        
         return supertest(app)
           .get(`/api/events`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
@@ -76,18 +71,11 @@ describe('Events Endpoints', () => {
     })
 
     context(`Given there are events in the database`, () => {
-      const testEvents = helpers.makeEventsArray()
-      const testUsers = helpers.makeUsersArray()
-
       beforeEach('insert events', () => {
-        return helpers.seedUsers(db, testUsers)
-          .then(() => {
-            return helpers.seedEvents(db, testEvents)
-          })
+        return helpers.seedEvents(db, testUsers, testEvents)
       })
 
       it('responds with 200 and all of the events for a user', () => {
-        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         const userId = testUsers[0].id
         const filteredTestEvents = testEvents.filter(event => event.user_id === userId)
         return supertest(app)
@@ -98,40 +86,36 @@ describe('Events Endpoints', () => {
     })
 
     context(`Given an XSS attack Event`, () => {
-      const testUsers = helpers.makeUsersArray()
       const { maliciousEvent, expectedEvent } = helpers.makeMaliciousEvent()
 
       beforeEach('insert malicious event', () => {
         return helpers.seedUsers(db, testUsers)
-        .then(() => {
-          return db
-          .into('events')
-          .insert(maliciousEvent)
-        })
+          .then(() => {
+            return db
+              .into('events')
+              .insert(maliciousEvent)
+          })
       })
 
       it('removes XSS attack content', () => {
-        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         return supertest(app)
-        .get(`/api/events`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200)
-        .expect(res => {
-          expect(res.body[0].event_name).to.eql(expectedEvent.event_name)
-          expect(res.body[0].host).to.eql(expectedEvent.host)
-          expect(res.body[0].city).to.eql(expectedEvent.city)
-          expect(res.body[0].state).to.eql(expectedEvent.state)
-          expect(res.body[0].address).to.eql(expectedEvent.address)
-          expect(res.body[0].description).to.eql(expectedEvent.description)
-          expect(res.body[0].status).to.eql(expectedEvent.status)
-        })
+          .get(`/api/events`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200)
+          .expect(res => {
+            expect(res.body[0].event_name).to.eql(expectedEvent.event_name)
+            expect(res.body[0].host).to.eql(expectedEvent.host)
+            expect(res.body[0].city).to.eql(expectedEvent.city)
+            expect(res.body[0].state).to.eql(expectedEvent.state)
+            expect(res.body[0].address).to.eql(expectedEvent.address)
+            expect(res.body[0].description).to.eql(expectedEvent.description)
+            expect(res.body[0].status).to.eql(expectedEvent.status)
+          })
       })
     })
   })
 
   describe(`POST /api/events`, () => {
-    const testUsers = helpers.makeUsersArray()
-
     beforeEach('insert users', () => {
       return helpers.seedUsers(db, testUsers)
     })
@@ -164,7 +148,6 @@ describe('Events Endpoints', () => {
         user_id: 1
       }
       it(`responds with 400 and an error message when the '${field}' is missing`, () => {
-        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         delete newEvent[field]
 
         return supertest(app)
@@ -178,7 +161,6 @@ describe('Events Endpoints', () => {
     })
 
     it(`responds with 400 and error message about invalid url`, () => {
-      const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
       const invalidUrl = {
         event_name: 'New Event',
         host: 'Host 1',
@@ -202,7 +184,6 @@ describe('Events Endpoints', () => {
     })
 
     it(`responds with 400 and error message about invalid state code`, () => {
-      const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
       const invalidState = {
         event_name: 'New Event',
         host: 'Host 1',
@@ -226,7 +207,6 @@ describe('Events Endpoints', () => {
     })
 
     it(`creates an event, responding with 201 and the new event`, () => {
-      const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
       const newEvent = {
         event_name: 'New Event',
         host: 'Host 1',

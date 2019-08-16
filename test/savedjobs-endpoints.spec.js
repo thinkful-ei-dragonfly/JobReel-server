@@ -1,7 +1,7 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Saved Jobs Endpoints', () => {
+describe('Saved Jobs Endpoints', () => {
   let db
 
   const testUsers = helpers.makeUsersArray()

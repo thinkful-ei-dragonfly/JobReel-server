@@ -257,7 +257,7 @@ describe('Saved Jobs Endpoints', () => {
     })
   })
 
-  describe.only(`PATCH /api/savedjobs/:job_id`, () => {
+  describe(`PATCH /api/savedjobs/:job_id`, () => {
 
   })
 })

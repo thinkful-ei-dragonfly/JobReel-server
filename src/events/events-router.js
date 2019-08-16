@@ -99,26 +99,28 @@ eventsRouter
   })
 
   eventsRouter
+  .all('/:event_id', (req, res, next) => {
+    const { event_id } = req.params
+    EventsService.getById(req.app.get('db'), event_id)
+      .then(event => {
+        if (!event) {
+          return res
+          .status(404)
+          .json({
+            error: { message: `Event Not Found` }
+          })
+        }
+        res.event = event
+        next()
+      })
+      .catch(next)
+  })
   .get('/:event_id', async (req, res, next) => {
     try {
-      let events = await EventsService.getEvents(
-        req.app.get('db'),
-        req.user.id
-      )
-      console.log(events)
-      let filteredEvent = events.filter(event => event.user_id == req.user.id)
-      console.log(filteredEvent)
-      if(!filteredEvent){
-        return res.status(404).json({
-          error: { message: `Event Not Found` }
-        })
-      }
-      // event = serializeEvent(event)
-
       res
       .status(200)
       .json(
-        filteredEvent
+        EventsService.serializeEvent(res.event)
       )
       next()
     }

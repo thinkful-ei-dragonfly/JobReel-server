@@ -40,7 +40,16 @@ const EventsService = {
       status: xss(event.status),
       user_id: event.user_id
     }
+  },
+
+  getById(db, event_id) {
+    return db
+      .from('events')
+      .select('*')
+      .where('event_id', event_id)
+      .first()
   }
+
 }
 
 module.exports = EventsService

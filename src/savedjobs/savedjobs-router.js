@@ -22,9 +22,9 @@ savedJobRouter
         return JobService.serializeJob(job)
       })
 
-      res.json({
+      res.json(
         jobs
-      })
+      )
       next()
     } catch(error) {
       next(error)
@@ -84,6 +84,38 @@ savedJobRouter
     catch(error){
       next(error)
     }
+  })
+
+  savedJobRouter
+  .all('/:job_id', async (req, res, next) => {
+    JobService.getById(
+      req.app.get('db'),
+      req.params.job_id
+    )
+    .then(job => {
+      if(!job){
+        return res
+        .status(404)
+        .json({
+          error: `Job doesn't exist`
+        })
+      }
+      res.job = job
+      next()
+    })
+    .catch(next)
+  })
+  .delete('/:job_id', async (req, res, next) => {
+    JobService.deleteJob(
+      req.app.get('db'),
+      req.params.job_id
+    )
+    .then(numRowsAffected => {
+      res
+      .status(204)
+      .end()
+    })
+    .catch(next)
   })
 
 

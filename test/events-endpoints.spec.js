@@ -126,12 +126,12 @@ describe('Events Endpoints', () => {
         'host',
         'city',
         'state',
-        'address',
+        // 'address',
         'date',
         'url',
-        'description',
-        'status',
-        'user_id'
+        // 'description',
+        // 'status',
+        // 'user_id'
       ]
 
     requiredFields.forEach(field => {
@@ -238,6 +238,216 @@ describe('Events Endpoints', () => {
           expect(res.body).to.have.property('event_id')
           expect(res.headers.location).to.eql(`/api/events/${res.body.event_id}`)
         })
+    })
+  })
+
+  describe('GET /api/events/:event_id', () => {
+    const testUsers = helpers.makeUsersArray()
+    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
+    beforeEach('insert users', () => {
+      return helpers.seedUsers(db, testUsers)
+    })
+
+    context(`Given no events`, () => {
+      it(`responds 404 whe event doesn't exist`, () => {
+        return supertest(app)
+          .get(`/api/events/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: { message: `Event Not Found` }
+          })
+      })
+    })
+
+    context('Given there are events in the database', () => {
+      const testEvents = helpers.makeEventsArray()
+
+      beforeEach('insert events', () => {
+        return db
+          .into('events')
+          .insert(testEvents)
+      })
+
+      it('responds with 200 and the specified event', () => {
+        const eventId = 2
+        const expectedEvent = testEvents[eventId - 1]
+
+        return supertest(app)
+          .get(`/api/events/${eventId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, expectedEvent)
+      })
+    })
+  })
+
+  describe('DELETE /api/events/:id', () => {
+    const testUsers = helpers.makeUsersArray()
+    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
+    beforeEach('insert users', () => {
+      return helpers.seedUsers(db, testUsers)
+    })
+
+    context(`Given no events`, () => {
+      it(`responds 404 when event doesn't exist`, () => {
+        return supertest(app)
+          .delete(`/api/events/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: { message: `Event Not Found` }
+          })
+      })
+    })
+
+    context('Given there are events in the database', () => {
+      const testEvents = helpers.makeEventsArray()
+
+      beforeEach('insert events', () => {
+        return db
+          .into('events')
+          .insert(testEvents)
+      })
+
+      it('removes the event by ID from the store', () => {
+        const idToRemove = 2
+        const expectedEvents = testEvents.filter(event => event.event_id !== idToRemove)
+        return supertest(app)
+          .delete(`/api/events/${idToRemove}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/events`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedEvents)
+          )
+      })
+    })
+  })
+
+  describe(`PATCH /api/events/:event_id`, () => {
+    const testUsers = helpers.makeUsersArray()
+    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
+    beforeEach('insert users', () => {
+      return helpers.seedUsers(db, testUsers)
+    })
+
+    context(`Given no events`, () => {
+      it(`responds with 404`, () => {
+        const eventId = 123456
+        return supertest(app)
+          .patch(`/api/events/${eventId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, { error: { message: `Event Not Found` } })
+      })
+    })
+
+    context('Given there are events in the database', () => {
+      const testEvents = helpers.makeEventsArray()
+
+      beforeEach('insert events', () => {
+        return db
+          .into('events')
+          .insert(testEvents)
+      })
+
+      it('responds with 204 and updates the event', () => {
+        const idToUpdate = 2
+        const updatedEvent = {
+            event_name: "Event 100",
+            host: "Host 100",
+            city: "City 100",
+        }
+  
+        const expectedEvent = {
+          ...testEvents[idToUpdate - 1],
+          ...updatedEvent
+        }
+        return supertest(app)
+          .patch(`/api/events/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send(updatedEvent)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/events/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedEvent)
+          )
+      })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 2
+        return supertest(app)
+          .patch(`/api/events/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send({ irrelevantField: 'foo' })
+          .expect(400, {
+            error: {
+              message: `Request body must content either event_name, host, city, state, address, date, url, description, or status`
+            }
+          })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updatedEvent = {
+          event_name: 'Updated event title',
+        }
+        const expectedEvent = {
+          ...testEvents[idToUpdate - 1],
+          ...updatedEvent
+        }
+
+        return supertest(app)
+          .patch(`/api/events/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send({
+            ...updatedEvent,
+            fieldToIgnore: 'should not be in GET response'
+          })
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/events/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedEvent)
+          )
+      })
+
+      it(`responds with 400 and error message about invalid url`, () => {
+        const idToUpdate = 2
+        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+        const invalidUrl = {
+          url: 'www.invalid.com',
+        }
+  
+        return supertest(app)
+          .patch(`/api/events/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send(invalidUrl)
+          .expect(400, {
+            error: 'Not a valid URL'
+          })
+      })
+  
+      it(`responds with 400 and error message about invalid state code`, () => {
+        const idToUpdate = 2
+        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+        const invalidState = {
+          state: 'Unknown State',
+        }
+  
+        return supertest(app)
+          .patch(`/api/events/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send(invalidState)
+          .expect(400, {
+            error: 'Not a valid state code'
+          })
+      })
     })
   })
 })

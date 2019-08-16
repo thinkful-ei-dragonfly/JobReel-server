@@ -40,7 +40,28 @@ const EventsService = {
       status: xss(event.status),
       user_id: event.user_id
     }
+  },
+
+  getById(db, id) {
+    return db
+      .from('events')
+      .select('*')
+      .where('event_id', id)
+      .first()
+  },
+
+  deleteEvent(db, id) {
+    return db('events')
+      .where('event_id', id)
+      .delete()
+  },
+  
+  updateEvent(db, id, newEventFields) {
+    return db('events')
+      .where('event_id', id)
+      .update(newEventFields)
   }
+
 }
 
 module.exports = EventsService

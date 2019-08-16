@@ -47,7 +47,6 @@ describe('Jobs Endpoints', function () {
         context('Given there are Github API jobs', () => {
             it('responds with 200 and all of the jobs', () => {
                 app.post((req, res, next) => {
-                    console.log(req.body.search)
                     const jobTitle = 'Full-stack'
                     const locaiton = 'San Diego'
                     unirest.get(`https://jobs.github.com/positions.json?description=${jobTitle}&location=${location}`)

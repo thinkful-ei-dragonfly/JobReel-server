@@ -26,7 +26,6 @@ jobsRouter
         unirest.get(`https://jobs.github.com/positions.json?description=${jobTitle}&location=${location}`)
             .end(jobs => {
                 if (jobs.error) throw new Error(jobs.error)
-                console.log(jobs.body)
                 res.status(200).send(jobs.body);
             })
 

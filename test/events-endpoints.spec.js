@@ -21,10 +21,7 @@ describe('Events Endpoints', () => {
       const testUsers = helpers.makeUsersArray()
 
       beforeEach('insert events', () => {
-        return helpers.seedUsers(db, testUsers)
-          .then(() => {
-            return helpers.seedEvents(db, testEvents)
-          })
+        return helpers.seedEvents(db, testUsers, testEvents)
       })
 
       it(`responds 401 'Missing bearer token' when no bearer token`, () => {
@@ -80,10 +77,7 @@ describe('Events Endpoints', () => {
       const testUsers = helpers.makeUsersArray()
 
       beforeEach('insert events', () => {
-        return helpers.seedUsers(db, testUsers)
-          .then(() => {
-            return helpers.seedEvents(db, testEvents)
-          })
+        return helpers.seedEvents(db, testUsers, testEvents)
       })
 
       it('responds with 200 and all of the events for a user', () => {

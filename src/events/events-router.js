@@ -107,7 +107,7 @@ eventsRouter
           return res
           .status(404)
           .json({
-            error: { message: `Event Not Found` }
+            error: `Event Not Found` 
           })
         }
         res.event = event
@@ -147,9 +147,8 @@ eventsRouter
     const numberOfValues = Object.values(updatedEvent).filter(Boolean).length
     if (numberOfValues === 0) {
       return res.status(400).json({
-        error: {
-          message: `Request body must content either event_name, host, city, state, address, date, url, description, or status`
-        }
+        error:  `Request body must contain either event_name, host, city, state, address, date, url, description, or status`
+        
       })
     }
 

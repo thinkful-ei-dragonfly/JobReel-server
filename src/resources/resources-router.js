@@ -35,7 +35,7 @@ resourcesRouter
 .post('/', jsonParser, async (req, res, next) => {
   const { type, title, description, date_added } = req.body
 
-  for(const field of ['type', 'title', 'description', 'date_added', 'user_id'])
+  for(const field of ['type', 'title', 'date_added'])
   if(!req.body[field]){
     return res
     .status(400)

@@ -125,9 +125,7 @@ describe('Resources Enpoints', () => {
       [
         'type',
         'title',
-        'description',
         'date_added',
-        'user_id'
       ]
 
     requiredFields.forEach(field => {

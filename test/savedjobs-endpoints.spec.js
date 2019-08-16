@@ -219,7 +219,7 @@ describe('Saved Jobs Endpoints', () => {
     })
   })
 
-  describe(`DELETE /api/:job_id`, () => {
+  describe(`DELETE /api/savedjobs/:job_id`, () => {
     context('Given no jobs', () => {
       beforeEach('insert users', () => {
         return helpers.seedUsers(db, testUsers)
@@ -255,5 +255,9 @@ describe('Saved Jobs Endpoints', () => {
               .expect(expectedJobs))
       })
     })
+  })
+
+  describe.only(`PATCH /api/savedjobs/:job_id`, () => {
+
   })
 })

@@ -344,8 +344,11 @@ function seedUsers(db, users) {
   return db.into('users').insert(preppedUsers)
 }
 
-function seedEvents(db, events) {
-  return db.into('events').insert(events)
+function seedEvents(db, users, events) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('events').insert(events)
+  })
 }
 
 function seedJobs(db, users, jobs) {
@@ -369,8 +372,12 @@ function seedCompanies(db, users, companies) {
   })
 }
 
-function seedResources(db, resources) {
-  return db.into('resources').insert(resources)
+function seedResources(db, users, resources) {
+  // return db.into('resources').insert(resources)
+  return db.transaction(async trx => {
+    await seedUsers(trx, users)
+    await trx.into('resources').insert(resources)
+  })
 }
 
 module.exports = {

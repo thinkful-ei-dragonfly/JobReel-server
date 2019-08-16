@@ -126,12 +126,8 @@ describe('Events Endpoints', () => {
         'host',
         'city',
         'state',
-        // 'address',
         'date',
         'url',
-        // 'description',
-        // 'status',
-        // 'user_id'
       ]
 
     requiredFields.forEach(field => {

@@ -1,6 +1,6 @@
 module.exports = {
   PORT: process.env.PORT || 80,
-  AUTHENTIC_JOBS_API_TOKEN: process.env.AUTHENTIC_JOBS_API_TOKEN || 'none',
+  AUTHENTIC_JOBS_API_TOKEN: process.env.AUTHENTIC_JOBS_API_TOKEN || 'c66f726164668b130ad1f770accfd159',
   NODE_ENV: process.env.NODE_ENV || 'development',
   DB_URL: process.env.DATABASE_URL || 'postgresql://dunder-mifflin@localhost/jobreel',
   // DB_URL: process.env.DB_URL || 'postgresql://dunder-mifflin@localhost/jobreel',

@@ -250,4 +250,93 @@ describe('Resources Enpoints', () => {
       })
     })
   })
+
+  describe(`PATCH /api/resources/:resource_id`, () => {
+    context('Given no resources', () => {
+
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 404`, () => {
+        const resourceId = 1
+        return supertest(app)
+          .patch(`/api/resources/${resourceId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Resource doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are resources in the database', () => {
+
+      beforeEach('insert resources', () => {
+        return helpers.seedResources(db, testUsers, testResources)
+      })
+
+      it('responds with 204 and updates the resource', () => {
+        const idToUpdate = 2
+        const updateResource = {
+          type: 'website',
+          title: 'New Resource',
+          description: 'Description for New Resource',
+          date_added: '2019-07-03T19:26:38.918Z',
+          user_id: 2
+        }
+        const expectedResource = {
+          ...testResources[idToUpdate - 1],
+          ...updateResource
+        }
+        return supertest(app)
+        .patch(`/api/resources/${idToUpdate}`)
+        .send(updateResource)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(204)
+        .then(() => 
+          supertest(app)
+          .get(`/api/resources/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(expectedResource)
+        )
+      })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 2
+        return supertest(app)
+        .patch(`/api/resources/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({ irrelevantField: 'foo' })
+        .expect(400, {
+          error: `Request body must contain 'type', 'title', 'description' or 'date_added'`
+        })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updatedResource = {
+          title: 'New Resource'
+        }
+        const expectedResource = {
+          ...testResources[idToUpdate - 1],
+          ...updatedResource
+        }
+
+        return supertest(app)
+        .patch(`/api/resources/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({
+          ...updatedResource,
+          fieldToIgnore: 'should not be in GET response'
+        })
+        .expect(204)
+        .then(() => 
+        supertest(app)
+        .get(`/api/resources/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(expectedResource)
+        )
+      })
+    })
+  })
 })

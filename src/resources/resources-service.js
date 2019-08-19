@@ -1,29 +1,29 @@
 const xss = require('xss')
 
 const ResourcesService = {
-  getResources(db, user_id){
+  getResources(db, user_id) {
     return db
-    .from('resources')
-    .select(
-      'resource_id',
-      'type',
-      'title',
-      'description',
-      'date_added',
-      'user_id'
-    )
-    .where('user_id', user_id)
+      .from('resources')
+      .select(
+        'resource_id',
+        'type',
+        'title',
+        'description',
+        'date_added',
+        'user_id'
+      )
+      .where('user_id', user_id)
   },
 
-  getById(db, resource_id){
+  getById(db, resource_id) {
     return db
-    .from('resources')
-    .select('*')
-    .where('resource_id', resource_id)
-    .first()
+      .from('resources')
+      .select('*')
+      .where('resource_id', resource_id)
+      .first()
   },
 
-  serializeResource(resource){
+  serializeResource(resource) {
     return {
       resource_id: resource.resource_id,
       type: resource.type,
@@ -33,17 +33,22 @@ const ResourcesService = {
       user_id: resource.user_id
     }
   },
-  insertResource(db, resource){
+  insertResource(db, resource) {
     return db
-    .insert(resource)
-    .into('resources')
-    .returning('*')
-    .then(([resource]) => resource)
+      .insert(resource)
+      .into('resources')
+      .returning('*')
+      .then(([resource]) => resource)
   },
-  deleteResource(db, resource_id){
+  deleteResource(db, resource_id) {
     return db('resources')
-    .where({ resource_id })
-    .delete()
+      .where({ resource_id })
+      .delete()
+  },
+  updateResource(db, resource_id, newResourceFields) {
+    return db('resources')
+      .where('resource_id', resource_id)
+      .update(newResourceFields)
   }
 }
 module.exports = ResourcesService

@@ -7,6 +7,7 @@ describe('Saved Companies Endpoints', () => {
   const testUsers = helpers.makeUsersArray()
   const [testUser] = testUsers
   const testCompanies = helpers.makeCompaniesArray()
+  const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
 
   before('make knex instance', () => {
     db = helpers.makeKnexInstance()
@@ -23,19 +24,19 @@ describe('Saved Companies Endpoints', () => {
     context(`Given no authorization`, () => {
 
       beforeEach('insert companies', () =>
-      helpers.seedCompanies(
-        db,
-        testUsers,
-        testCompanies
+        helpers.seedCompanies(
+          db,
+          testUsers,
+          testCompanies
+        )
       )
-    )
 
       it(`responds 401 'Missing bearer token' when no bearer token`, () => {
         return supertest(app)
-        .get(`/api/companies`)
-        .expect(401, {
-          error: 'Missing bearer token'
-        })
+          .get(`/api/companies`)
+          .expect(401, {
+            error: 'Missing bearer token'
+          })
       })
 
       it(`responds 401 'Unauthorized request' when invalid JWT secrete`, () => {
@@ -43,22 +44,22 @@ describe('Saved Companies Endpoints', () => {
         const invalidSecret = 'bad-secret'
 
         return supertest(app)
-        .get(`/api/companies`)
-        .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
-        .expect(401, {
-          error: 'Unauthorized request'
-        })
+          .get(`/api/companies`)
+          .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
+          .expect(401, {
+            error: 'Unauthorized request'
+          })
       })
 
       it(`responds 401 'Unauthorized request' when invalid sub in payload`, () => {
-        const invalidUser = { username: 'NonExistent', id: 1}
+        const invalidUser = { username: 'NonExistent', id: 1 }
 
         return supertest(app)
-        .get(`/api/companies`)
-        .set('Authorization', helpers.makeAuthHeader(invalidUser))
-        .expect(401, {
-          error: 'Unauthorized request'
-        })
+          .get(`/api/companies`)
+          .set('Authorization', helpers.makeAuthHeader(invalidUser))
+          .expect(401, {
+            error: 'Unauthorized request'
+          })
       })
     })
 
@@ -66,46 +67,44 @@ describe('Saved Companies Endpoints', () => {
       const testUsers = helpers.makeUsersArray()
       beforeEach('insert users', () => {
         return db
-        .into('users')
-        .insert(testUsers)
+          .into('users')
+          .insert(testUsers)
       })
 
       it(`responds with 200 and an empty list`, () => {
-        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         return supertest(app)
-        .get(`/api/companies`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, {companies: []})
+          .get(`/api/companies`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, [])
       })
     })
 
     context(`Given there are companies in the db`, () => {
       beforeEach('insert companies', () =>
-      helpers.seedCompanies(
-        db,
-        testUsers,
-        testCompanies
+        helpers.seedCompanies(
+          db,
+          testUsers,
+          testCompanies
+        )
       )
-    )
-    
-        it('responds with 200 and all of the companies for a user', () => {
-          const validCreds = { username: testUser.username, password: testUser.password }
-          const userId = testUser.id
-          const filteredTestCompanies = testCompanies.filter(company => company.user_id === userId)
-         
-          return supertest(app)
+
+      it('responds with 200 and all of the companies for a user', () => {
+        const userId = testUser.id
+        const filteredTestCompanies = testCompanies.filter(company => company.user_id === userId)
+
+        return supertest(app)
           .get(`/api/companies`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(200, {companies: filteredTestCompanies})
-        })
+          .expect(200, filteredTestCompanies)
       })
+    })
   })
 
   describe(`POST /api/companies`, () => {
     beforeEach('insert users', () => {
       return db
-      .into('users')
-      .insert(testUsers)
+        .into('users')
+        .insert(testUsers)
     })
 
     const requiredFields = ['company_name', 'city', 'state']
@@ -139,12 +138,12 @@ describe('Saved Companies Endpoints', () => {
       }
 
       return supertest(app)
-      .post('/api/companies')
-      .set('Authorization', helpers.makeAuthHeader(testUser))
-      .send(invalidState)
-      .expect(400, {
-        error: 'Not a valid state code'
-      })
+        .post('/api/companies')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .send(invalidState)
+        .expect(400, {
+          error: 'Not a valid state code'
+        })
     })
 
     it(`responds with 400 and error message about invalid website`, () => {
@@ -156,12 +155,12 @@ describe('Saved Companies Endpoints', () => {
       }
 
       return supertest(app)
-      .post('/api/companies')
-      .set('Authorization', helpers.makeAuthHeader(testUser))
-      .send(invalidURL)
-      .expect(400, {
-        error: 'Not a valid URL'
-      })
+        .post('/api/companies')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .send(invalidURL)
+        .expect(400, {
+          error: 'Not a valid URL'
+        })
     })
 
     it(`responds with 201 and returns the posted contact`, () => {
@@ -212,8 +211,204 @@ describe('Saved Companies Endpoints', () => {
               const actualDate = new Date(row.date_added).toLocaleString();
               expect(actualDate).to.eql(expectedDate);
             })
-      )
+        )
     })
   })
 
+  describe('GET /api/companies/:company_id', () => {
+
+    context('Given no companies', () => {
+
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds 404 when the company doesn't exist`, () => {
+        return supertest(app)
+          .get(`/api/companies/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Company doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are companies in the database', () => {
+
+      beforeEach('insert companies', () => {
+        return helpers.seedCompanies(db, testUsers, testCompanies)
+      })
+
+      it('responds with 200 and the specified company', () => {
+        const companyId = 2
+        const expectedCompany = testCompanies[companyId - 1]
+
+        return supertest(app)
+          .get(`/api/companies/${companyId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, expectedCompany)
+      })
+    })
+  })
+
+  describe(`DELETE /api/companies/:company_id`, () => {
+    context('Given no companies', () => {
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 404 when the job doesn't exist`, () => {
+        return supertest(app)
+          .delete(`/api/companies/1`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Company doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are companies in the database', () => {
+      beforeEach('insert companies', () => {
+        return helpers.seedCompanies(db, testUsers, testCompanies)
+      })
+
+      it('responds with 204 and removes the company', () => {
+        const idToRemove = 2
+        const expectedCompanies = testCompanies.filter(company => company.company_id !== idToRemove)
+
+        return supertest(app)
+          .delete(`/api/companies/${idToRemove}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/companies`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedCompanies)
+          )
+      })
+    })
+  })
+
+  describe(`PATCH /api/companies/:company_id`, () => {
+    context('Given no companies', () => {
+
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 404`, () => {
+        const companyId = 1
+        return supertest(app)
+          .patch(`/api/companies/${companyId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Company doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are companies in the database', () => {
+
+      beforeEach('insert companies', () => {
+        return helpers.seedCompanies(db, testUsers, testCompanies)
+      })
+
+      it('responds with 204 and updates the company', () => {
+        const idToUpdate = 2
+        const updateCompany = {
+          company_name: 'New Company Name',
+          city: 'Town',
+          state: 'IL',
+          industry: 'Tech',
+          website: 'http://www.company.com/company1',
+          description: 'New Company Description',
+          contact: 'New Contact',
+          date_added: '2019-07-03T19:26:38.918Z',
+          user_id: 1
+        }
+        const expectedCompany = {
+          ...testCompanies[idToUpdate - 1],
+          ...updateCompany
+        }
+        return supertest(app)
+          .patch(`/api/companies/${idToUpdate}`)
+          .send(updateCompany)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/companies/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedCompany)
+          )
+      })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 2
+        return supertest(app)
+        .patch(`/api/companies/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({ irrelevantField: 'foo' })
+        .expect(400, {
+          error: `Request body must contain either 'company_name', 'city', 'state', 'industry', 'website', 'description', 'contact', or 'date_added'`
+        })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updatedCompany = {
+          company_name: 'New Company Name'
+        }
+        const expectedCompany = {
+          ...testCompanies[idToUpdate - 1],
+          ...updatedCompany
+        }
+        
+        return supertest(app)
+        .patch(`/api/companies/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({
+          ...updatedCompany,
+          fieldToIgnore: 'should not be in GET response'
+        })
+        expect(204)
+        .then(() => 
+        supertest(app)
+        .get(`/api/companies/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(expectedCompany))
+      })
+
+      it(`responds with 400 and error message aobut invalid url`, () => {
+        const idToUpdate = 2
+        const invalidUrl = {
+          website: 'www.invalid.com'
+        }
+
+        return supertest(app)
+        .patch(`/api/companies/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send(invalidUrl)
+        .expect(400, {
+          error: 'Not a valid URL'
+        })
+      })
+
+      it(`responds with 400 and error message about invalid state code`, () => {
+        const idToUpdate = 2
+        const invalidState = {
+          state: 'Unknown State',
+        }
+
+        return supertest(app)
+        .patch(`/api/companies/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send(invalidState)
+        .expect(400, {
+          error: 'Not a valid state code'
+        })
+      })
+    })
+  })
 })

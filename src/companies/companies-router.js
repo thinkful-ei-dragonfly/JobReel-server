@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const CompanyService = require('./companies-service')
 const { requireAuth } = require('../middleware/jwt-auth')
-const validationService = require('../validation-service')
+const ValidationService = require('../validation-service')
 
 const companiesRouter = express.Router()
 const bodyParser = express.json()
@@ -22,9 +22,9 @@ companiesRouter
         return CompanyService.serializeCompany(company)
       })
 
-      res.json({
+      res.json(
         companies
-      })
+      )
       next()
     } catch(error) {
       next(error)
@@ -40,13 +40,13 @@ companiesRouter
         error: `Missing '${key}' in request body`
       })
 
-    if(!validationService.validateState(state)){
+    if(!ValidationService.validateState(state)){
       return res.status(400).json({
         error: 'Not a valid state code'
       })
     }
 
-    if(!validationService.validateUrl(website)){
+    if(!ValidationService.validateUrl(website)){
       return res.status(400).json({
         error: 'Not a valid URL'
       })
@@ -78,6 +78,99 @@ companiesRouter
     catch(error){
       next(error)
     }
+    })
+
+    companiesRouter
+    .all('/:company_id', (req, res, next) => {
+      CompanyService.getById(
+        req.app.get('db'),
+        req.params.company_id
+      )
+      .then(company => {
+        if(!company){
+          return res
+          .status(404)
+          .json({
+            error: `Company doesn't exist`
+          })
+        }
+        res.company = company
+        next()
+      })
+      .catch(next)
+    })
+    .get('/:company_id', async (req, res, next) => {
+      try {
+        res
+        .status(200)
+        .json(
+          CompanyService.serializeCompany(res.company)
+        )
+        next()
+      }
+      catch(error){
+        next(error)
+      }
+    })
+    .delete('/:company_id', async (req, res, next) => {
+      CompanyService.deleteCompany(
+        req.app.get('db'),
+        req.params.company_id
+      )
+      .then(numRowsAffected => {
+        res
+        .status(204)
+        .end()
+      })
+      .catch(next)
+    })
+    .patch('/:company_id', bodyParser, (req, res, next) => {
+      const { company_id } = req.params
+      const { company_name, city, state, industry, website, description, contact, date_added } = req.body
+      const updatedCompany = { company_name, city, state, industry, website, description, contact, date_added }
+
+      const numberOfValues = Object.values(updatedCompany).filter(Boolean).length
+      if(numberOfValues === 0){
+        return res
+        .status(400)
+        .json({
+          error: `Request body must contain either 'company_name', 'city', 'state', 'industry', 'website', 'description', 'contact', or 'date_added'`
+        })
+      }
+
+      if(website){
+        const validateUrl = ValidationService.validateUrl(website)
+        if(!validateUrl){
+          return res
+          .status(400)
+          .json({
+            error: 'Not a valid URL'
+          })
+        }
+      }
+
+      if(state){
+        const validateState = ValidationService.validateState(state)
+        if(!validateState){
+          return res
+          .status(400)
+          .json({
+            error: 'Not a valid state code'
+          })
+        }
+      }
+
+      CompanyService.updateCompany(
+        req.app.get('db'),
+        company_id,
+        updatedCompany
+      )
+      .then(numRowsAffected => {
+        res
+        .status(204)
+        .end()
+      })
+      .catch(next)
     })
 
 module.exports = companiesRouter

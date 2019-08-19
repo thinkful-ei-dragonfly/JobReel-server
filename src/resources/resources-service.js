@@ -14,6 +14,15 @@ const ResourcesService = {
     )
     .where('user_id', user_id)
   },
+
+  getById(db, resource_id){
+    return db
+    .from('resources')
+    .select('*')
+    .where('resource_id', resource_id)
+    .first()
+  },
+
   serializeResource(resource){
     return {
       resource_id: resource.resource_id,
@@ -30,6 +39,11 @@ const ResourcesService = {
     .into('resources')
     .returning('*')
     .then(([resource]) => resource)
+  },
+  deleteResource(db, resource_id){
+    return db('resources')
+    .where({ resource_id })
+    .delete()
   }
 }
 module.exports = ResourcesService

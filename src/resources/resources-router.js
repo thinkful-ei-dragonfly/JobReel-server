@@ -71,4 +71,49 @@ resourcesRouter
   }
 })
 
+resourcesRouter
+.all('/:resource_id', (req, res, next) => {
+  ResourcesService.getById(
+    req.app.get('db'),
+    req.params.resource_id
+  )
+  .then(resource => {
+    if(!resource){
+      return res
+      .status(404)
+      .json({
+        error: `Resource doesn't exist`
+      })
+    }
+    res.resource = resource
+    next()
+  })
+  .catch(next)
+})
+.get('/:resource_id', async (req, res, next) => {
+  try {
+    res
+    .status(200)
+    .json(
+      ResourcesService.serializeResource(res.resource)
+    )
+    next()
+  }
+  catch(error){
+    next(error)
+  }
+})
+.delete('/:resource_id', async (req, res, next) => {
+  ResourcesService.deleteResource(
+    req.app.get('db'),
+    req.params.resource_id
+  )
+  .then(numRowsAffected => {
+    res
+    .status(204)
+    .end()
+  })
+  .catch(next)
+})
+
 module.exports = resourcesRouter

@@ -261,7 +261,7 @@ describe('Saved Jobs Endpoints', () => {
         return helpers.seedUsers(db, testUsers)
       })
 
-      it(`responds with 404`, () => {
+      it(`responds with 404 when the job doesn't exist`, () => {
         return supertest(app)
           .delete(`/api/savedjobs/${1}`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))

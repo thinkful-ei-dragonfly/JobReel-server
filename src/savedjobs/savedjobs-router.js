@@ -31,13 +31,13 @@ savedJobRouter
     }
   })
   .post('/', bodyParser, async(req, res, next) => {
-    const { job_title, company, city, state, date_added, url, description } = req.body
+    const { job_title, company, city, state, date_added, url, description, status } = req.body
     const required = {
       job_title,
       company,
       city,
       state,
-      url,
+      url
     }
 
     for (const [key, value] of Object.entries(required))
@@ -66,7 +66,8 @@ savedJobRouter
         state,
         date_added,
         url,
-        description
+        description,
+        status
       }
 
       newJob.user_id = req.user.id

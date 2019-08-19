@@ -1,7 +1,7 @@
 const express = require('express')
 const path = require('path')
 const UsersService = require('./users-service')
-
+const { requireAuth } = require('../middleware/jwt-auth')
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
 
@@ -70,4 +70,37 @@ usersRouter
     next(error)
   }
 })
+
+usersRouter
+.use(requireAuth)
+.all('/:id', (req, res, next) => {
+    UsersService.getById(
+      req.app.get('db'),
+      req.params.id
+    )
+    .then(user => {
+      if(!user){
+        return res
+        .status(404)
+        .json({
+          error: `User doesn't exist`
+        })
+      }
+      res.user = user
+      next()
+    })
+    .catch(next)
+  })
+  .get('/:id', async (req, res, next) => {
+    try {
+      res.status(200)
+      .json(
+        UsersService.serializeUser(res.user)
+      )
+      next()
+    }
+    catch(error){
+      next(error)
+    }
+  })
 module.exports = usersRouter

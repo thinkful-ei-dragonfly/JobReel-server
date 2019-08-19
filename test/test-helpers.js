@@ -31,6 +31,25 @@ function makeUsersArray() {
   ]
 }
 
+function expectedUsers(){
+  return [
+    {
+      id: 1,
+      email: 'user1@email.com',
+      first_name: 'First1',
+      last_name: 'Last1',
+      username: 'user1',
+    },
+    {
+      id: 2,
+      email: 'user2@email.com',
+      first_name: 'First2',
+      last_name: 'Last2',
+      username: 'user2',
+    }
+  ]
+}
+
 function makeMaliciousUser() {
   const maliciousUser = {
     id: 911,
@@ -402,6 +421,7 @@ module.exports = {
   makeExpectedGitHubJobs,
   makeJobsFixtures,
   makeCompaniesArray,
-  makeResourcesArray
+  makeResourcesArray,
+  expectedUsers
 }
 

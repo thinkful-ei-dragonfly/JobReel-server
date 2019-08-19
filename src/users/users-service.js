@@ -40,6 +40,13 @@ const UsersService = {
   hashPassword(password){
     return bcrypt.hash(password, 12)
   },
+  getById(db, id){
+    return db
+    .from('users')
+    .select('*')
+    .where('id', id)
+    .first()
+  },
   serializeUser(user){
     return {
       id: user.id,

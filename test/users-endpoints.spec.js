@@ -2,8 +2,13 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const bcrypt = require('bcryptjs')
 
-describe('User Endpoints', () => {
+describe.only('User Endpoints', () => {
   let db
+
+  const testUsers = helpers.makeUsersArray()
+  const expectedUsers = helpers.expectedUsers()
+  const testUser = testUsers[0]
+  const validCreds = { username: testUser.username, password: testUser.password }
 
   before('make knex instance', () => {
     db = helpers.makeKnexInstance()
@@ -162,8 +167,7 @@ describe('User Endpoints', () => {
     })
 
     context('Given users already in the database', () => {
-      const testUsers = helpers.makeUsersArray()
-      const testUser = testUsers[0]
+
 
       beforeEach('insert users', () => {
         return helpers.seedUsers(db, testUsers)
@@ -178,25 +182,56 @@ describe('User Endpoints', () => {
           password: 'Password1!'
         }
         return supertest(app)
-        .post('/api/users')
-        .send(duplicateEmail)
-        .expect(400, {
-          error: 'Email already taken'
-        })
+          .post('/api/users')
+          .send(duplicateEmail)
+          .expect(400, {
+            error: 'Email already taken'
+          })
       })
     })
 
     it('removes XSS attack content from response', () => {
       const { maliciousUser, expectedUser } = helpers.makeMaliciousUser()
       return supertest(app)
-      .post(`/api/users`)
-      .send(maliciousUser)
-      .expect(201)
-      .expect(res => {
-        expect(res.body.email).to.eql(expectedUser.email)
-        expect(res.body.first_name).to.eql(expectedUser.first_name)
-        expect(res.body.last_name).to.eql(expectedUser.last_name)
-        expect(res.body.username).to.eql(expectedUser.username)
+        .post(`/api/users`)
+        .send(maliciousUser)
+        .expect(201)
+        .expect(res => {
+          expect(res.body.email).to.eql(expectedUser.email)
+          expect(res.body.first_name).to.eql(expectedUser.first_name)
+          expect(res.body.last_name).to.eql(expectedUser.last_name)
+          expect(res.body.username).to.eql(expectedUser.username)
+        })
+    })
+  })
+
+  describe.only(`GET /api/users/:id`, () => {
+
+    context(`Given no users`, () => {
+
+      it(`responds with 404`, () => {
+        const userId = 123456
+        return supertest(app)
+        .get(`/api/users/${userId}`)
+        .expect(401, {
+          error: `Missing bearer token`
+        })
+      })
+    })
+
+    context.only('Given there are users in the database', () => {
+
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it.only('responds with 200 and the specified user', () => {
+        const userId = 2
+        const expectedUser = expectedUsers[userId - 1]
+        return supertest(app)
+        .get(`/api/users/${userId}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(200, expectedUser)
       })
     })
   })

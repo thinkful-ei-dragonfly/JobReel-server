@@ -128,5 +128,40 @@ usersRouter
     .catch(next)
   }
   })
+  .patch('/:id', jsonBodyParser, (req, res, next) => {
+    const { id } = req.params
+    const { email, first_name, last_name, username, password } = req.body
+    const updatedUser = { email, first_name, last_name, username, password }
+    if(req.user.id !== parseInt(req.params.id)){
+      return res.status(401)
+      .json(
+        {
+          error: 'Unauthorized request'
+        }
+      )
+    }
+
+    else{
+      const numberOfValues = Object.values(updatedUser).filter(Boolean).length
+      if(numberOfValues === 0){
+        return res
+        .status(400)
+        .json({
+          error: `Request body must contain either 'email', 'first_name', 'last_name', 'username', or 'password'`
+        })
+      }
+
+      UsersService.updateUser(
+        req.app.get('db'),
+        id,
+        updatedUser
+      )
+      .then(numRowsAffected => {
+        res.status(204)
+        .end()
+      })
+      .catch(next)
+    }
+  })
 
 module.exports = usersRouter

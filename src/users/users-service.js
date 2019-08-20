@@ -52,6 +52,11 @@ const UsersService = {
     .where({ id })
     .delete()
   },
+  updateUser(db, id, newJobFields){
+    return db('users')
+    .where('id', id)
+    .update(newJobFields)
+  },
   serializeUser(user){
     return {
       id: user.id,

@@ -23,22 +23,22 @@ describe('Saved Contacts Endpoints', () => {
   describe(`GET /api/contacts`, () => {
     context(`Given no authorization`, () => {
       const testContacts = helpers.makeContactsArray()
-      const testUsers  = helpers.makeUsersArray()
+      const testUsers = helpers.makeUsersArray()
 
       beforeEach('Seed contacts', () =>
-      helpers.seedContacts(
-        db,
-        testUsers,
-        testContacts
+        helpers.seedContacts(
+          db,
+          testUsers,
+          testContacts
+        )
       )
-    )
 
       it(`responds 401 'Missing bearer token' when no bearer token`, () => {
         return supertest(app)
-        .get(`/api/contacts`)
-        .expect(401, {
-          error: 'Missing bearer token'
-        })
+          .get(`/api/contacts`)
+          .expect(401, {
+            error: 'Missing bearer token'
+          })
       })
 
       it(`responds 401 'Unauthorized request' when invalid JWT secrete`, () => {
@@ -46,22 +46,22 @@ describe('Saved Contacts Endpoints', () => {
         const invalidSecret = 'bad-secret'
 
         return supertest(app)
-        .get(`/api/contacts`)
-        .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
-        .expect(401, {
-          error: 'Unauthorized request'
-        })
+          .get(`/api/contacts`)
+          .set('Authorization', helpers.makeAuthHeader(validUser, invalidSecret))
+          .expect(401, {
+            error: 'Unauthorized request'
+          })
       })
 
       it(`responds 401 'Unauthorized request' when invalid sub in payload`, () => {
-        const invalidUser = { username: 'NonExistent', id: 1}
+        const invalidUser = { username: 'NonExistent', id: 1 }
 
         return supertest(app)
-        .get(`/api/contacts`)
-        .set('Authorization', helpers.makeAuthHeader(invalidUser))
-        .expect(401, {
-          error: 'Unauthorized request'
-        })
+          .get(`/api/contacts`)
+          .set('Authorization', helpers.makeAuthHeader(invalidUser))
+          .expect(401, {
+            error: 'Unauthorized request'
+          })
       })
     })
 
@@ -69,43 +69,43 @@ describe('Saved Contacts Endpoints', () => {
       const testUsers = helpers.makeUsersArray()
       beforeEach('insert users', () => {
         return db
-        .into('users')
-        .insert(testUsers)
+          .into('users')
+          .insert(testUsers)
       })
 
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
-        .get(`/api/contacts`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, [])
+          .get(`/api/contacts`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, [])
       })
     })
 
     context(`Given there are contacts in the db`, () => {
       beforeEach('insert contacts', () =>
-      helpers.seedContacts(
-        db,
-        testUsers,
-        testContacts
+        helpers.seedContacts(
+          db,
+          testUsers,
+          testContacts
+        )
       )
-    )
-        it('responds with 200 and all of the contacts for a user', () => {
-          const userId = testUser.id
-          const filteredTestContacts = testContacts.filter(contact => contact.user_id === userId)
+      it('responds with 200 and all of the contacts for a user', () => {
+        const userId = testUser.id
+        const filteredTestContacts = testContacts.filter(contact => contact.user_id === userId)
 
-          return supertest(app)
+        return supertest(app)
           .get(`/api/contacts`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
           .expect(200, filteredTestContacts)
-        })
       })
+    })
   })
 
   describe(`POST /api/contacts`, () => {
     beforeEach('insert users', () => {
       return db
-      .into('users')
-      .insert(testUsers)
+        .into('users')
+        .insert(testUsers)
     })
 
     const requiredFields = ['job_title', 'company', 'contact_name']
@@ -140,12 +140,12 @@ describe('Saved Contacts Endpoints', () => {
       }
 
       return supertest(app)
-      .post('/api/contacts')
-      .set('Authorization', helpers.makeAuthHeader(testUser))
-      .send(invalidURL)
-      .expect(400, {
-        error: 'Not a valid linkedin URL'
-      })
+        .post('/api/contacts')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .send(invalidURL)
+        .expect(400, {
+          error: 'Not a valid linkedin URL'
+        })
     })
 
     it(`responds with 201 and returns the posted contact`, () => {
@@ -195,25 +195,25 @@ describe('Saved Contacts Endpoints', () => {
               const actualDate = new Date(row.date_added).toLocaleString();
               expect(actualDate).to.eql(expectedDate);
             })
-      )
+        )
     })
   })
 
   describe('GET /api/contacts/:contact_id', () => {
 
     context(`Given no contacts`, () => {
-      
+
       beforeEach('insert users', () => {
         return helpers.seedUsers(db, testUsers)
       })
 
       it(`responds 404 when the contact doesn't exist`, () => {
         return supertest(app)
-        .get(`/api/contacts/123`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(404, {
-          error: `Contact doesn't exist`
-        })
+          .get(`/api/contacts/123`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Contact doesn't exist`
+          })
       })
     })
 
@@ -228,9 +228,9 @@ describe('Saved Contacts Endpoints', () => {
         const expectedContact = testContacts[contactId - 1]
 
         return supertest(app)
-        .get(`/api/contacts/${contactId}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, expectedContact)
+          .get(`/api/contacts/${contactId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, expectedContact)
       })
     })
   })
@@ -244,11 +244,11 @@ describe('Saved Contacts Endpoints', () => {
 
       it(`responds with 404 when the contact doesn't exist`, () => {
         return supertest(app)
-        .delete(`/api/contacts/1`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(404, {
-          error: `Contact doesn't exist`
-        })
+          .delete(`/api/contacts/1`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Contact doesn't exist`
+          })
       })
     })
 
@@ -262,15 +262,109 @@ describe('Saved Contacts Endpoints', () => {
         const expectedContacts = testContacts.filter(contact => contact.contact_id !== idToRemove)
 
         return supertest(app)
-        .delete(`/api/contacts/${idToRemove}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(204)
-        .then(() => 
-          supertest(app)
-          .get(`/api/contacts`)
+          .delete(`/api/contacts/${idToRemove}`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(expectedContacts)
-        )
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/contacts`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedContacts)
+          )
+      })
+    })
+  })
+
+  describe(`PATCH /api/contacts/:contact_id`, () => {
+
+    context('Given no contacts in the database', () => {
+
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 404`, () => {
+        const contactId = 1
+        return supertest(app)
+          .patch(`/api/contacts/${contactId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(404, {
+            error: `Contact doesn't exist`
+          })
+      })
+    })
+
+    context('Given there are contacts in the database', () => {
+
+      beforeEach('insert contacts', () => {
+        return helpers.seedContacts(db, testUsers, testContacts)
+      })
+
+      it('responds with 204 and updates the contact', () => {
+        const idToUpdate = 2
+        const updateContact = {
+          contact_name: 'New Contact',
+          job_title: 'New Title',
+          company: 'New Company',
+          email: 'new@email.com',
+          linkedin: 'http://www.newsite.com/person1',
+          comments: 'New Contact 1 comments',
+          date_added: '2019-07-03T19:26:38.918Z',
+          connected: true,
+          user_id: 2
+        }
+        const expectedContact = {
+          ...testContacts[idToUpdate - 1],
+          ...updateContact
+        }
+        return supertest(app)
+          .patch(`/api/contacts/${idToUpdate}`)
+          .send(updateContact)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/contacts/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedContact)
+          )
+      })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 2
+        return supertest(app)
+          .patch(`/api/contacts/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send({ irrelevantField: 'foo' })
+          .expect(400, {
+            error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments'`
+          })
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 2
+        const updatedContact = {
+          job_title: 'New Job title'
+        }
+        const expectedContact = {
+          ...testContacts[idToUpdate - 1],
+          ...updatedContact
+        }
+
+        return supertest(app)
+          .patch(`/api/contacts/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send({
+            ...updatedContact,
+            fieldToIgnore: 'should not be in GET response'
+          })
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/contacts/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedContact)
+          )
       })
     })
   })

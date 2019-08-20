@@ -1,12 +1,13 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe('Saved Contacts Endpoints', () => {
+describe.only('Saved Contacts Endpoints', () => {
   let db
 
   const testUsers = helpers.makeUsersArray()
   const [testUser] = testUsers
   const testContacts = helpers.makeContactsArray()
+  const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
 
   before('make knex instance', () => {
     db = helpers.makeKnexInstance()
@@ -73,7 +74,6 @@ describe('Saved Contacts Endpoints', () => {
       })
 
       it(`responds with 200 and an empty list`, () => {
-        const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
         return supertest(app)
         .get(`/api/contacts`)
         .set('Authorization', helpers.makeAuthHeader(validCreds))
@@ -90,7 +90,6 @@ describe('Saved Contacts Endpoints', () => {
       )
     )
         it('responds with 200 and all of the contacts for a user', () => {
-          const validCreds = { username: testUser.username, password: testUser.password }
           const userId = testUser.id
           const filteredTestContacts = testContacts.filter(contact => contact.user_id === userId)
 
@@ -197,6 +196,42 @@ describe('Saved Contacts Endpoints', () => {
               expect(actualDate).to.eql(expectedDate);
             })
       )
+    })
+  })
+
+  describe('GET /api/contacts/:contact_id', () => {
+
+    context(`Given no contacts`, () => {
+      
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds 404 when the contact doesn't exist`, () => {
+        return supertest(app)
+        .get(`/api/contacts/123`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(404, {
+          error: `Contact doesn't exist`
+        })
+      })
+    })
+
+    context('Given there are contacts in the database', () => {
+
+      beforeEach('insert contacts', () => {
+        return helpers.seedContacts(db, testUsers, testContacts)
+      })
+
+      it('responds with 200 and the specified contact', () => {
+        const contactId = 2
+        const expectedContact = testContacts[contactId - 1]
+
+        return supertest(app)
+        .get(`/api/contacts/${contactId}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(200, expectedContact)
+      })
     })
   })
 })

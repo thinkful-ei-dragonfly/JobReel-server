@@ -26,6 +26,13 @@ const ContactService = {
     .returning('*')
     .then(([contact]) => contact)
   },
+  getById(db, contact_id){
+    return db
+    .from('contacts')
+    .select('*')
+    .where('contact_id', contact_id)
+    .first()
+  },
 
   serializeContact(contact){
     return {

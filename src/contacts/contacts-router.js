@@ -73,4 +73,37 @@ contactsRouter
     }
   })
 
+  contactsRouter
+  .all('/:contact_id', (req, res, next) => {
+    ContactService.getById(
+      req.app.get('db'),
+      req.params.contact_id
+    )
+    .then(contact => {
+      if(!contact){
+        return res
+        .status(404)
+        .json({
+          error: `Contact doesn't exist`
+        })
+      }
+      res.contact = contact
+      next()
+    })
+    .catch(next)
+  })
+  .get('/:contact_id', async (req, res, next) => {
+    try {
+      res
+      .status(200)
+      .json(
+        ContactService.serializeContact(res.contact)
+      )
+      next()
+    }
+    catch(error){
+      next(error)
+    }
+  })
+
   module.exports = contactsRouter

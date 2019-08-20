@@ -1,5 +1,4 @@
 const express = require('express')
-const JobsService = require('./jobs-service')
 const jobsRouter = express.Router()
 const unirest = require('unirest')
 const config = require('../config')
@@ -9,7 +8,6 @@ const jsonBodyParser = express.json()
 jobsRouter
     .route(`/authentic`)
     .post(jsonBodyParser, (req, res, next) => {
-        console.log(req.body.search)
         const {jobTitle, location} = req.body.search
         unirest.get(`https://authenticjobs.com/api/?api_key=${config.AUTHENTIC_JOBS_API_TOKEN}&method=aj.jobs.search&keywords=${jobTitle}&location=${location}&format=json`)
             .end(function (result) {

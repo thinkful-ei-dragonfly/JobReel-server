@@ -34,6 +34,12 @@ const ContactService = {
     .first()
   },
 
+  deleteContact(db, contact_id){
+    return db('contacts')
+    .where({ contact_id })
+    .delete()
+  },
+
   serializeContact(contact){
     return {
       contact_id: contact.contact_id,

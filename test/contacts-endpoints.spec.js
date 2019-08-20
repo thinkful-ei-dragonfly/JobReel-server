@@ -234,4 +234,44 @@ describe.only('Saved Contacts Endpoints', () => {
       })
     })
   })
+
+  describe.only(`DELETE /api/contacts/:contact_id`, () => {
+
+    context('Given no contacts in databse', () => {
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 404 when the contact doesn't exist`, () => {
+        return supertest(app)
+        .delete(`/api/contacts/1`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(404, {
+          error: `Contact doesn't exist`
+        })
+      })
+    })
+
+    context('Given there are contacts in the database', () => {
+      beforeEach('insert contacts', () => {
+        return helpers.seedContacts(db, testUsers, testContacts)
+      })
+
+      it('responds with 204 and removes the contact', () => {
+        const idToRemove = 2
+        const expectedContacts = testContacts.filter(contact => contact.contact_id !== idToRemove)
+
+        return supertest(app)
+        .delete(`/api/contacts/${idToRemove}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(204)
+        .then(() => 
+          supertest(app)
+          .get(`/api/contacts`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(expectedContacts)
+        )
+      })
+    })
+  })
 })

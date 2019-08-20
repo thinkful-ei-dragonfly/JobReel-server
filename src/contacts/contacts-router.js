@@ -22,9 +22,9 @@ contactsRouter
         return ContactService.serializeContact(contact)
       })
 
-      res.json({
+      res.json(
         contacts
-      })
+      )
       next()
     } catch(error) {
       next(error)
@@ -104,6 +104,18 @@ contactsRouter
     catch(error){
       next(error)
     }
+  })
+  .delete('/:contact_id', async (req, res, next) => {
+    ContactService.deleteContact(
+      req.app.get('db'),
+      req.params.contact_id
+    )
+    .then(numRowsAffected => {
+      res
+      .status(204)
+      .end()
+    })
+    .catch(next)
   })
 
   module.exports = contactsRouter

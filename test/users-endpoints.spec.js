@@ -2,7 +2,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const bcrypt = require('bcryptjs')
 
-describe.only('User Endpoints', () => {
+describe('User Endpoints', () => {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -205,33 +205,111 @@ describe.only('User Endpoints', () => {
     })
   })
 
-  describe.only(`GET /api/users/:id`, () => {
+  describe(`GET /api/users/:id`, () => {
 
     context(`Given no users`, () => {
 
-      it(`responds with 404`, () => {
+      it(`responds with 404 and 'Missing bearer token'`, () => {
         const userId = 123456
         return supertest(app)
-        .get(`/api/users/${userId}`)
-        .expect(401, {
-          error: `Missing bearer token`
-        })
+          .get(`/api/users/${userId}`)
+          .expect(401, {
+            error: `Missing bearer token`
+          })
       })
     })
 
-    context.only('Given there are users in the database', () => {
+    context('Given there are users in the database', () => {
 
       beforeEach('insert users', () => {
         return helpers.seedUsers(db, testUsers)
       })
 
-      it.only('responds with 200 and the specified user', () => {
+      it(`responds with 401 'Unauthorized request' when id param is not the same as the users id`, () => {
         const userId = 2
+        return supertest(app)
+          .get(`/api/users/${userId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(401, {
+            error: `Unauthorized request`
+          })
+      })
+
+      it('responds with 200 and the specified user when id param is the same as the users id', () => {
+        const userId = 1
         const expectedUser = expectedUsers[userId - 1]
         return supertest(app)
-        .get(`/api/users/${userId}`)
+          .get(`/api/users/${userId}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(200, expectedUser)
+      })
+    })
+
+    context(`Given an XSS attack User`, () => {
+      const { maliciousUser } = helpers.makeMaliciousUser()
+
+      beforeEach('insert malicious user', () => {
+        return db
+          .into('users')
+          .insert(testUsers)
+          .then(() => {
+            return db
+              .into('users')
+              .insert(maliciousUser)
+          })
+      })
+
+      it('removes XSS attack content', () => {
+        const userCreds = { username: maliciousUser.username, password: maliciousUser.password }
+        return supertest(app)
+          .get(`/api/users/${maliciousUser.id}`)
+          .set('Authorization', helpers.makeAuthHeader(userCreds))
+          .expect(200)
+          .expect(res => {
+            expect(res.body.email).to.eql(`email@email.com <img src="https://url.to.file.which/does-not.exist">`)
+            expect(res.body.first_name).to.eql(`First <img src="https://url.to.file.which/does-not.exist">`)
+            expect(res.body.last_name).to.eql(`Last <img src="https://url.to.file.which/does-not.exist">`)
+            expect(res.body.username).to.eql(`username <img src="https://url.to.file.which/does-not.exist">`)
+          })
+      })
+    })
+  })
+
+  describe(`DELETE /api/users/:id`, () => {
+
+    context('Given no users', () => {
+
+      it(`responds with 404 and 'Missing bearer token'`, () => {
+        const userId = 123456
+        return supertest(app)
+          .get(`/api/users/${userId}`)
+          .expect(401, {
+            error: `Missing bearer token`
+          })
+      })
+    })
+
+    context('Given there are users in the database', () => {
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 401 'Unauthorized request' when id param is not the same as the users id`, () => {
+        const idToRemove = 2
+        return supertest(app)
+          .delete(`/api/users/${idToRemove}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(401, {
+            error: `Unauthorized request`
+          })
+      })
+  
+      it(`responds with 204 and removes the user when id param is the same as the user id`, () => {
+        const idToRemove = 1
+        return supertest(app)
+        .delete(`/api/users/${idToRemove}`)
         .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, expectedUser)
+        .expect(204)
       })
     })
   })

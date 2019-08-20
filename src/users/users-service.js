@@ -47,6 +47,11 @@ const UsersService = {
     .where('id', id)
     .first()
   },
+  deleteUser(db, id){
+    return db('users')
+    .where({ id })
+    .delete()
+  },
   serializeUser(user){
     return {
       id: user.id,

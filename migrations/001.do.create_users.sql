@@ -8,5 +8,5 @@ create table "users"(
   "password" text not null,
   "city" text,
   "industry" text,
-  "job_title" text,
+  "job_title" text
 );

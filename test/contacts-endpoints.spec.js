@@ -1,7 +1,7 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Saved Contacts Endpoints', () => {
+describe('Saved Contacts Endpoints', () => {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -77,7 +77,7 @@ describe.only('Saved Contacts Endpoints', () => {
         return supertest(app)
         .get(`/api/contacts`)
         .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(200, {contacts: []})
+        .expect(200, [])
       })
     })
 
@@ -96,7 +96,7 @@ describe.only('Saved Contacts Endpoints', () => {
           return supertest(app)
           .get(`/api/contacts`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(200, {contacts: filteredTestContacts})
+          .expect(200, filteredTestContacts)
         })
       })
   })
@@ -235,7 +235,7 @@ describe.only('Saved Contacts Endpoints', () => {
     })
   })
 
-  describe.only(`DELETE /api/contacts/:contact_id`, () => {
+  describe(`DELETE /api/contacts/:contact_id`, () => {
 
     context('Given no contacts in databse', () => {
       beforeEach('insert users', () => {

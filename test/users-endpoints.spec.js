@@ -303,13 +303,111 @@ describe('User Endpoints', () => {
             error: `Unauthorized request`
           })
       })
-  
+
       it(`responds with 204 and removes the user when id param is the same as the user id`, () => {
         const idToRemove = 1
         return supertest(app)
-        .delete(`/api/users/${idToRemove}`)
+          .delete(`/api/users/${idToRemove}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+      })
+    })
+  })
+
+  describe(`PATCH /api/users/:id`, () => {
+
+    context('Given no users in the database', () => {
+
+      it(`responds with 404 and 'Missing bearer token'`, () => {
+        const userId = 123456
+        return supertest(app)
+          .get(`/api/users/${userId}`)
+          .expect(401, {
+            error: `Missing bearer token`
+          })
+      })
+    })
+
+    context('Given there are users in the database', () => {
+      beforeEach('insert users', () => {
+        return helpers.seedUsers(db, testUsers)
+      })
+
+      it(`responds with 401 'Unauthorized request' when id param is not the same as the users id`, () => {
+        const idToRemove = 2
+        return supertest(app)
+          .delete(`/api/users/${idToRemove}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(401, {
+            error: `Unauthorized request`
+          })
+      })
+
+      it(`responds with 400 when no required fields supplied`, () => {
+        const idToUpdate = 1
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({ irrelevantField: 'foo' })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: `Request body must contain either 'email', 'first_name', 'last_name', 'username', or 'password'`
+          })
+      })
+
+      it(`responds with 204 and updates the user when the id param is the same as the user id`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          email: 'newUser@email.com',
+          first_name: 'New',
+          last_name: 'Name',
+          username: 'newUser',
+          password: 'newPassword1!'
+        }
+        const expectedUser = {
+          id: idToUpdate,
+          email: 'newUser@email.com',
+          first_name: 'New',
+          last_name: 'Name',
+          username: 'newUser',
+        }
+        const userCreds = { username: expectedUser.username, password: expectedUser.password }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send(updateUser)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/users/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(userCreds))
+              .expect(expectedUser)
+          )
+      })
+
+      it(`responds with 204 when updating only a subset of fields`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          email: 'update@email.com',
+        }
+        const expectedUser = {
+          ...expectedUsers[idToUpdate - 1],
+          ...updateUser
+        }
+
+        return supertest(app)
+        .patch(`/api/users/${idToUpdate}`)
+        .send({
+          ...updateUser,
+          fieldToIgnore: 'should not be in the GET response'
+        })
         .set('Authorization', helpers.makeAuthHeader(validCreds))
         .expect(204)
+        .then(res => 
+          supertest(app)
+          .get(`/api/users/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(expectedUser)
+          )
       })
     })
   })

@@ -22,8 +22,7 @@ describe('Saved Jobs Endpoints', () => {
 
   describe(`GET /api/savedjobs`, () => {
     context(`Given no authorization`, () => {
-      const testJobs = helpers.makeJobsArray()
-      const testUsers = helpers.makeUsersArray()
+
 
       beforeEach('insert jobs', () =>
         helpers.seedJobs(
@@ -41,7 +40,7 @@ describe('Saved Jobs Endpoints', () => {
           })
       })
 
-      it(`responds 401 'Unauthorized request' when invalid JWT secrete`, () => {
+      it(`responds 401 'Unauthorized request' when invalid JWT secret`, () => {
         const validUser = testUsers[0]
         const invalidSecret = 'bad-secret'
 

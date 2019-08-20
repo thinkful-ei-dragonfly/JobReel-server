@@ -39,7 +39,11 @@ const ContactService = {
     .where({ contact_id })
     .delete()
   },
-
+  updateContact(db, contact_id, newJobFields){
+    return db('contacts')
+    .where('contact_id', contact_id)
+    .update(newJobFields)
+  },
   serializeContact(contact){
     return {
       contact_id: contact.contact_id,

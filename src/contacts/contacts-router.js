@@ -22,9 +22,9 @@ contactsRouter
         return ContactService.serializeContact(contact)
       })
 
-      res.json({
+      res.json(
         contacts
-      })
+      )
       next()
     } catch(error) {
       next(error)
@@ -71,6 +71,51 @@ contactsRouter
     catch(error){
       next(error)
     }
+  })
+
+  contactsRouter
+  .all('/:contact_id', (req, res, next) => {
+    ContactService.getById(
+      req.app.get('db'),
+      req.params.contact_id
+    )
+    .then(contact => {
+      if(!contact){
+        return res
+        .status(404)
+        .json({
+          error: `Contact doesn't exist`
+        })
+      }
+      res.contact = contact
+      next()
+    })
+    .catch(next)
+  })
+  .get('/:contact_id', async (req, res, next) => {
+    try {
+      res
+      .status(200)
+      .json(
+        ContactService.serializeContact(res.contact)
+      )
+      next()
+    }
+    catch(error){
+      next(error)
+    }
+  })
+  .delete('/:contact_id', async (req, res, next) => {
+    ContactService.deleteContact(
+      req.app.get('db'),
+      req.params.contact_id
+    )
+    .then(numRowsAffected => {
+      res
+      .status(204)
+      .end()
+    })
+    .catch(next)
   })
 
   module.exports = contactsRouter

@@ -2,7 +2,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const bcrypt = require('bcryptjs')
 
-describe('User Endpoints', () => {
+describe.only('User Endpoints', () => {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -166,6 +166,22 @@ describe('User Endpoints', () => {
         })
     })
 
+    it(`responds 400 when email isn't valid`, () => {
+      const badEmail = {
+        email: 'bademail',
+        first_name: 'First',
+        last_name: 'Last',
+        username: 'username',
+        password: 'Passw0rd!'
+      }
+      return supertest(app)
+        .post('/api/users')
+        .send(badEmail)
+        .expect(400, {
+          error: 'Not a valid email'
+        })
+    })
+
     context('Given users already in the database', () => {
 
 
@@ -188,21 +204,40 @@ describe('User Endpoints', () => {
             error: 'Email already taken'
           })
       })
+
+      it(`responds 400 'An account with this username already exists' when username isn't unique`, () => {
+        const duplicateUserName = {
+          email: 'email@email.com',
+          first_name: 'First',
+          last_name: 'Last',
+          username: testUser.username,
+          password: 'Password1!'
+        }
+        return supertest(app)
+        .post('/api/users')
+        .send(duplicateUserName)
+        .expect(400, {
+          error: 'Username already taken'
+        })
+      })
     })
 
-    it('removes XSS attack content from response', () => {
-      const { maliciousUser, expectedUser } = helpers.makeMaliciousUser()
-      return supertest(app)
-        .post(`/api/users`)
-        .send(maliciousUser)
-        .expect(201)
-        .expect(res => {
-          expect(res.body.email).to.eql(expectedUser.email)
-          expect(res.body.first_name).to.eql(expectedUser.first_name)
-          expect(res.body.last_name).to.eql(expectedUser.last_name)
-          expect(res.body.username).to.eql(expectedUser.username)
-        })
+    context('Given XSS attack content', () => {
+      it('removes XSS attack content from response', () => {
+        const { maliciousUser, expectedUser } = helpers.makeMaliciousUser()
+        return supertest(app)
+          .post(`/api/users`)
+          .send(maliciousUser)
+          .expect(201)
+          .expect(res => {
+            expect(res.body.email).to.eql(expectedUser.email)
+            expect(res.body.first_name).to.eql(expectedUser.first_name)
+            expect(res.body.last_name).to.eql(expectedUser.last_name)
+            expect(res.body.username).to.eql(expectedUser.username)
+          })
+      })
     })
+
   })
 
   describe(`GET /api/users/:id`, () => {
@@ -395,19 +430,155 @@ describe('User Endpoints', () => {
         }
 
         return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in the GET response'
+          })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/users/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedUser)
+          )
+      })
+
+      it(`responds 400 'Password must be longer than 7 characters' when given a short password`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          password: 'Pass1!',
+        }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in the GET response'
+          })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: `Password must be longer than 8 characters`
+          })
+      })
+
+      it(`responds 400 'Password must be less than 72 characters' when given a long password`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          password: '*'.repeat(73)
+        }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in the GET response'
+          })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: `Password must be less than 72 characters`
+          })
+      })
+
+      it(`responds 400 when password starts with spaces`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          password: ' Password1!'
+        }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in the GET response'
+          })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: 'Password must not start or end with empty spaces'
+          })
+      })
+
+      it(`responds 400 when password ends with spaces`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          password: 'Password1! '
+        }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in the GET response'
+          })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: 'Password must not start or end with empty spaces'
+          })
+      })
+
+      it(`responds 400 when password isn't complex enough`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          password: 'Password'
+        }
+        return supertest(app)
+          .patch(`/api/users/${idToUpdate}`)
+          .send({
+            ...updateUser,
+            fieldToIgnore: 'should not be in the GET response'
+          })
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .expect(400, {
+            error: 'Password must contain one upper case, lower case, number and special character'
+          })
+      })
+
+      it(`responds 400 when username is already taken`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          username: testUsers[1].username
+        }
+        return supertest(app)
         .patch(`/api/users/${idToUpdate}`)
         .send({
           ...updateUser,
           fieldToIgnore: 'should not be in the GET response'
         })
         .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(204)
-        .then(res => 
-          supertest(app)
-          .get(`/api/users/${idToUpdate}`)
-          .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(expectedUser)
-          )
+        .expect(400, {
+          error: 'Username already taken'
+        })
+      })
+
+      it(`responds 400 when given a bad email`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          email: 'bad email'
+        }
+        return supertest(app)
+        .patch(`/api/users/${idToUpdate}`)
+        .send({
+          ...updateUser,
+          fieldToIgnore: 'should not be in the GET response'
+        })
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(400, {
+          error: 'Not a valid email'
+        })
+      })
+
+      it(`responds 400 when email already taken`, () => {
+        const idToUpdate = 1
+        const updateUser = {
+          email: testUsers[1].email
+        }
+        return supertest(app)
+        .patch(`/api/users/${idToUpdate}`)
+        .send({
+          ...updateUser,
+          fieldToIgnore: 'should not be in the GET response'
+        })
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .expect(400, {
+          error: 'Email already taken'
+        })
       })
     })
   })

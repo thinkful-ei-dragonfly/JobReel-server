@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const ContactService = require('./contacts-service')
 const { requireAuth } = require('../middleware/jwt-auth')
-const validationService = require('../validation-service')
+const ValidationService = require('../validation-service')
 
 const contactsRouter = express.Router()
 const bodyParser = express.json()
@@ -40,11 +40,22 @@ contactsRouter
           error: `Missing '${key}' in request body`
         })
 
-    if (!validationService.validateUrl(req.body.linkedin)) {
-      return res.status(400).json({
-        error: 'Not a valid linkedin URL'
-      })
+    if (linkedin) {
+      if (!ValidationService.validateUrl(linkedin)) {
+        return res.status(400).json({
+          error: 'Not a valid linkedin URL'
+        })
+      }
     }
+
+    if (email) {
+      if (!ValidationService.validateEmail(email)) {
+        return res.status(400).json({
+          error: 'Not a valid email'
+        })
+      }
+    }
+
 
     try {
       const newContact = {
@@ -129,6 +140,22 @@ contactsRouter
         .json({
           error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments'`
         })
+    }
+
+    if (linkedin) {
+      if (!ValidationService.validateUrl(linkedin)) {
+        return res.status(400).json({
+          error: 'Not a valid linkedin URL'
+        })
+      }
+    }
+
+    if (email) {
+      if (!ValidationService.validateEmail(email)) {
+        return res.status(400).json({
+          error: 'Not a valid email'
+        })
+      }
     }
 
     ContactService.updateContact(

@@ -134,8 +134,8 @@ savedJobRouter
   })
   .patch('/:job_id', bodyParser, (req, res, next) => {
     const { job_id } = req.params
-    const { job_title, company, city, state, date_added, url, description } = req.body
-    const updatedJob = { job_title, company, city, state, date_added, url, description }
+    const { job_title, company, city, state, date_added, url, description, status } = req.body
+    const updatedJob = { job_title, company, city, state, date_added, url, description, status }
 
     const numberOfValues = Object.values(updatedJob).filter(Boolean).length
     if (numberOfValues === 0) {

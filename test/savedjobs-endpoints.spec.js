@@ -104,7 +104,7 @@ describe('Saved Jobs Endpoints', () => {
       return helpers.seedUsers(db, testUsers)
     })
 
-    const requiredFields = ['job_title', 'company', 'city', 'state', 'url',]
+    const requiredFields = ['job_title', 'company', 'city', 'url',]
 
     requiredFields.forEach((field) => {
       const jobBody = {

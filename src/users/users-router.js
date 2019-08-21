@@ -4,6 +4,7 @@ const UsersService = require('./users-service')
 const { requireAuth } = require('../middleware/jwt-auth')
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
+const ValidationService = require('../validation-service')
 
 usersRouter
   .post('/', jsonBodyParser, async (req, res, next) => {
@@ -17,7 +18,7 @@ usersRouter
       }
 
     try {
-      const passwordError = UsersService.validatePassword(password)
+      const passwordError = ValidationService.validatePassword(password)
 
       if (passwordError) {
         return res.status(400).json({
@@ -28,10 +29,15 @@ usersRouter
         req.app.get('db'),
         username
       )
-
       if (hasUserWithUserName) {
         return res.status(400).json({
           error: `Username already taken`
+        })
+      }
+
+      if (!ValidationService.validateEmail(email)) {
+        return res.status(400).json({
+          error: 'Not a valid email'
         })
       }
 
@@ -128,10 +134,11 @@ usersRouter
     .catch(next)
   }
   })
-  .patch('/:id', jsonBodyParser, (req, res, next) => {
+  .patch('/:id', jsonBodyParser, async (req, res, next) => {
     const { id } = req.params
     const { email, first_name, last_name, username, password } = req.body
-    const updatedUser = { email, first_name, last_name, username, password }
+    let updatedUser = { email, first_name, last_name, username, password }
+    let hashedPassword
     if(req.user.id !== parseInt(req.params.id)){
       return res.status(401)
       .json(
@@ -151,6 +158,57 @@ usersRouter
         })
       }
 
+      try{
+      if(password){
+      const passwordError = ValidationService.validatePassword(password)
+
+      if (passwordError) {
+        return res.status(400).json({
+          error: passwordError
+        })
+      }
+      else{
+        hashedPassword = UsersService.hashPassword(password)
+        
+      }
+    }
+
+    if(username){
+      const hasUserWithUserName = await UsersService.hasUserWithUserName(
+        req.app.get('db'),
+        username
+      )
+
+      if (hasUserWithUserName) {
+        return res.status(400).json({
+          error: `Username already taken`
+        })
+      }
+    }
+
+    if(email){
+      if (!ValidationService.validateEmail(email)) {
+        return res.status(400).json({
+          error: 'Not a valid email'
+        })
+      }
+      else {
+        const hasUserWithEmail = await UsersService.hasUserWithEmail(
+          req.app.get('db'),
+          email
+        )
+  
+        if (hasUserWithEmail) {
+          return res.status(400).json({
+            error: `Email already taken`
+          })
+        }
+      }
+    }
+
+    updatedUser = {
+      email, first_name, last_name, username, password: hashedPassword
+    }
       UsersService.updateUser(
         req.app.get('db'),
         id,
@@ -160,7 +218,10 @@ usersRouter
         res.status(204)
         .end()
       })
-      .catch(next)
+    }
+      catch(error){
+        next(error)
+      }
     }
   })
 

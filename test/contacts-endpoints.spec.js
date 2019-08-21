@@ -148,6 +148,23 @@ describe('Saved Contacts Endpoints', () => {
         })
     })
 
+    it(`responds with 400 and error message about invalid email`, () => {
+      const invalidEmail = {
+        job_title: 'Job1',
+        company: 'Company 1',
+        contact_name: 'Contact1',
+        email: 'badEmail'
+      }
+
+      return supertest(app)
+      .post('/api/contacts')
+      .set('Authorization', helpers.makeAuthHeader(testUser))
+      .send(invalidEmail)
+      .expect(400, {
+        error: 'Not a valid email'
+      })
+    })
+
     it(`responds with 201 and returns the posted contact`, () => {
       const newContact = {
         job_title: 'Job3',
@@ -365,6 +382,40 @@ describe('Saved Contacts Endpoints', () => {
               .set('Authorization', helpers.makeAuthHeader(validCreds))
               .expect(expectedContact)
           )
+      })
+
+      it(`responds with 400 when linkedin url is invalid`, () => {
+        const idToUpdate = 2
+        const updatedContact = {
+          linkedin: 'www.linkedin.com'
+        }
+        return supertest(app)
+        .patch(`/api/contacts/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({
+          ...updatedContact,
+          fieldToIgnore: 'should not be in GET response'
+        })
+        .expect(400, {
+          error: 'Not a valid linkedin URL'
+        })
+      })
+
+      it(`responds with 400 when email is invalid`, () => {
+        const idToUpdate = 2
+        const updatedContact = {
+          email: 'bad email'
+        }
+        return supertest(app)
+        .patch(`/api/contacts/${idToUpdate}`)
+        .set('Authorization', helpers.makeAuthHeader(validCreds))
+        .send({
+          ...updatedContact,
+          fieldToIgnore: 'should not be in GET response'
+        })
+        .expect(400, {
+          error: 'Not a valid email'
+        })
       })
     })
   })

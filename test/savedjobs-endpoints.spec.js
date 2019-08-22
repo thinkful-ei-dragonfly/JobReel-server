@@ -148,25 +148,6 @@ describe('Saved Jobs Endpoints', () => {
         })
     })
 
-    it(`responds with 400 and error message about invalid state code`, () => {
-      const invalidState = {
-        job_title: 'UX Designer',
-        company: 'Company C',
-        city: 'Minneapolis',
-        state: 'M',
-        url: 'http://www.facebook.com',
-        description: 'UX job',
-      }
-
-      return supertest(app)
-        .post('/api/savedjobs')
-        .set('Authorization', helpers.makeAuthHeader(testUser))
-        .send(invalidState)
-        .expect(400, {
-          error: 'Not a valid state code'
-        })
-    })
-
     it(`responds with 201 and returns the posted job`, () => {
       const newJob = {
         job_title: 'UX Designer',
@@ -394,21 +375,6 @@ describe('Saved Jobs Endpoints', () => {
           .send(invalidUrl)
           .expect(400, {
             error: 'Not a valid URL'
-          })
-      })
-
-      it(`responds with 400 and error message about invalid state code`, () => {
-        const idToUpdate = 2
-        const invalidState = {
-          state: 'Unknown State',
-        }
-
-        return supertest(app)
-          .patch(`/api/savedjobs/${idToUpdate}`)
-          .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .send(invalidState)
-          .expect(400, {
-            error: 'Not a valid state code'
           })
       })
     })

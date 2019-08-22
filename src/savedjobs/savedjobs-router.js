@@ -46,13 +46,13 @@ savedJobRouter
           error: `Missing '${key}' in request body`
         });
 
-    if (state) {
-      if (!ValidationService.validateState(state)) {
-        return res.status(400).json({
-          error: 'Not a valid state code'
-        })
-      }
-    }
+    // if (state) {
+    //   if (!ValidationService.validateState(state)) {
+    //     return res.status(400).json({
+    //       error: 'Not a valid state code'
+    //     })
+    //   }
+    // }
 
     if (!ValidationService.validateUrl(url)) {
       return res.status(400).json({
@@ -157,16 +157,16 @@ savedJobRouter
       }
     }
 
-    if (state) {
-      const validateState = ValidationService.validateState(state)
-      if (!validateState) {
-        return res
-          .status(400)
-          .json({
-            error: 'Not a valid state code'
-          })
-      }
-    }
+    // if (state) {
+    //   const validateState = ValidationService.validateState(state)
+    //   if (!validateState) {
+    //     return res
+    //       .status(400)
+    //       .json({
+    //         error: 'Not a valid state code'
+    //       })
+    //   }
+    // }
 
     JobService.updateJob(
       req.app.get('db'),

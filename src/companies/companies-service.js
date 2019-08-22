@@ -27,6 +27,23 @@ const CompanyService = {
     .then(([company]) => company)
   },
 
+  getById(db, company_id){
+    return db
+    .from('companies')
+    .select('*')
+    .where('company_id', company_id)
+    .first()
+  },
+  deleteCompany(db, company_id){
+    return db('companies')
+    .where({ company_id })
+    .delete()
+  },
+  updateCompany(db, company_id, newJobFields){
+    return db('companies')
+    .where('company_id', company_id)
+    .update(newJobFields)
+  },
   serializeCompany(company){
     return {
       company_id: company.company_id,

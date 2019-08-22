@@ -22,8 +22,7 @@ describe('Saved Jobs Endpoints', () => {
 
   describe(`GET /api/savedjobs`, () => {
     context(`Given no authorization`, () => {
-      const testJobs = helpers.makeJobsArray()
-      const testUsers = helpers.makeUsersArray()
+
 
       beforeEach('insert jobs', () =>
         helpers.seedJobs(
@@ -41,7 +40,7 @@ describe('Saved Jobs Endpoints', () => {
           })
       })
 
-      it(`responds 401 'Unauthorized request' when invalid JWT secrete`, () => {
+      it(`responds 401 'Unauthorized request' when invalid JWT secret`, () => {
         const validUser = testUsers[0]
         const invalidSecret = 'bad-secret'
 
@@ -105,7 +104,7 @@ describe('Saved Jobs Endpoints', () => {
       return helpers.seedUsers(db, testUsers)
     })
 
-    const requiredFields = ['job_title', 'company', 'city', 'state', 'url',]
+    const requiredFields = ['job_title', 'company', 'city', 'url',]
 
     requiredFields.forEach((field) => {
       const jobBody = {
@@ -261,7 +260,7 @@ describe('Saved Jobs Endpoints', () => {
         return helpers.seedUsers(db, testUsers)
       })
 
-      it(`responds with 404`, () => {
+      it(`responds with 404 when the job doesn't exist`, () => {
         return supertest(app)
           .delete(`/api/savedjobs/${1}`)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
@@ -288,7 +287,8 @@ describe('Saved Jobs Endpoints', () => {
             supertest(app)
               .get(`/api/savedjobs`)
               .set('Authorization', helpers.makeAuthHeader(validCreds))
-              .expect(expectedJobs))
+              .expect(expectedJobs)
+          )
       })
     })
   })
@@ -348,12 +348,12 @@ describe('Saved Jobs Endpoints', () => {
       it(`responds with 400 when no required fields supplied`, () => {
         const idToUpdate = 2
         return supertest(app)
-        .patch(`/api/savedjobs/${idToUpdate}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .send({ irrelevantField: 'foo' })
-        .expect(400, {
-          error: `Request body must contain either 'job_title', 'company', 'city', 'state', 'date_added', 'url', or 'description'`
-        })
+          .patch(`/api/savedjobs/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send({ irrelevantField: 'foo' })
+          .expect(400, {
+            error: `Request body must contain either 'job_title', 'company', 'city', 'state', 'date_added', 'url', or 'description'`
+          })
       })
 
       it(`responds with 204 when updating only a subset of fields`, () => {
@@ -367,19 +367,19 @@ describe('Saved Jobs Endpoints', () => {
         }
 
         return supertest(app)
-        .patch(`/api/savedjobs/${idToUpdate}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .send({
-          ...updatedJob,
-          fieldToIgnore: 'should not be in GET response'
-        })
-        .expect(204)
-        .then(() => 
-        supertest(app)
-        .get(`/api/savedjobs/${idToUpdate}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .expect(expectedJob)
-        )
+          .patch(`/api/savedjobs/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send({
+            ...updatedJob,
+            fieldToIgnore: 'should not be in GET response'
+          })
+          .expect(204)
+          .then(() =>
+            supertest(app)
+              .get(`/api/savedjobs/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(validCreds))
+              .expect(expectedJob)
+          )
       })
 
       it(`responds with 400 and error message about invalid url`, () => {
@@ -389,12 +389,12 @@ describe('Saved Jobs Endpoints', () => {
         }
 
         return supertest(app)
-        .patch(`/api/savedjobs/${idToUpdate}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .send(invalidUrl)
-        .expect(400, {
-          error: 'Not a valid URL'
-        })
+          .patch(`/api/savedjobs/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send(invalidUrl)
+          .expect(400, {
+            error: 'Not a valid URL'
+          })
       })
 
       it(`responds with 400 and error message about invalid state code`, () => {
@@ -404,12 +404,12 @@ describe('Saved Jobs Endpoints', () => {
         }
 
         return supertest(app)
-        .patch(`/api/savedjobs/${idToUpdate}`)
-        .set('Authorization', helpers.makeAuthHeader(validCreds))
-        .send(invalidState)
-        .expect(400, {
-          error: 'Not a valid state code'
-        })
+          .patch(`/api/savedjobs/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(validCreds))
+          .send(invalidState)
+          .expect(400, {
+            error: 'Not a valid state code'
+          })
       })
     })
   })

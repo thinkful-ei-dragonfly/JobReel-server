@@ -3,7 +3,7 @@ create table "jobs"(
   "job_title" text not null, 
   "company" text not null,
   "city" text not null,
-  "state" text not null,
+  "state" text,
   "date_added" TIMESTAMP DEFAULT now() NOT NULL,
   "url" text not null,
   "description" text,

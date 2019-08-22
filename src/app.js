@@ -12,6 +12,8 @@ const jobsRouter = require('./jobs/jobs-router')
 const resourcesRouter = require('./resources/resources-router')
 const contactsRouter = require('./contacts/contacts-router')
 const companiesRouter = require('./companies/companies-router')
+const meetupRouter = require('./meetups/meetups-router.js')
+const hunterRouter = require('./findcontacts/findcontacts-router.js')
 
 
 const app = express()
@@ -33,6 +35,8 @@ app.use('/api/jobs', jobsRouter)
 app.use('/api/resources', resourcesRouter)
 app.use('/api/contacts', contactsRouter)
 app.use('/api/companies', companiesRouter)
+app.use('/api/meetups', meetupRouter)
+app.use('/api/findcontacts', hunterRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello, world!')

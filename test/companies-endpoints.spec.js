@@ -39,7 +39,7 @@ describe('Saved Companies Endpoints', () => {
           })
       })
 
-      it(`responds 401 'Unauthorized request' when invalid JWT secrete`, () => {
+      it(`responds 401 'Unauthorized request' when invalid JWT secret`, () => {
         const validUser = testUsers[0]
         const invalidSecret = 'bad-secret'
 

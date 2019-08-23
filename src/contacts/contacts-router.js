@@ -139,7 +139,7 @@ contactsRouter
       return res
         .status(400)
         .json({
-          error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments'`
+          error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments', or 'connected'`
         })
     }
 

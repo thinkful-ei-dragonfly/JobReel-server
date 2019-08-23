@@ -12,7 +12,7 @@ const jobsRouter = require('./jobs/jobs-router')
 const resourcesRouter = require('./resources/resources-router')
 const contactsRouter = require('./contacts/contacts-router')
 const companiesRouter = require('./companies/companies-router')
-const eventbriteRouter = require('./meetups/meetups-router.js')
+const eventbriteRouter = require('./eventbrite/eventbrite-router.js')
 const hunterRouter = require('./findcontacts/findcontacts-router.js')
 
 

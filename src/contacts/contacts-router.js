@@ -31,8 +31,8 @@ contactsRouter
     }
   })
   .post('/', bodyParser, async (req, res, next) => {
-    const { job_title, company, contact_name, email, linkedin, comments } = req.body
-    const required = { job_title, company, contact_name }
+    const { job_title, company, contact_name, email, linkedin, comments, connected } = req.body
+    const required = { job_title, company, contact_name, connected }
 
     for (const [key, value] of Object.entries(required))
       if (value == null)
@@ -64,7 +64,8 @@ contactsRouter
         company,
         email,
         linkedin,
-        comments
+        comments,
+        connected
       }
 
       newContact.user_id = req.user.id
@@ -130,15 +131,15 @@ contactsRouter
   })
   .patch('/:contact_id', bodyParser, (req, res, next) => {
     const { contact_id } = req.params
-    const { job_title, company, contact_name, email, linkedin, comments } = req.body
-    const updatedContact = { job_title, company, contact_name, email, linkedin, comments }
+    const { job_title, company, contact_name, email, linkedin, comments, connected } = req.body
+    const updatedContact = { job_title, company, contact_name, email, linkedin, comments, connected }
 
     const numberOfValues = Object.values(updatedContact).filter(Boolean).length
     if (numberOfValues === 0) {
       return res
         .status(400)
         .json({
-          error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments'`
+          error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments', or 'connected'`
         })
     }
 

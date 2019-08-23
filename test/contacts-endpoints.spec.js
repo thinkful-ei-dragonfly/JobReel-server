@@ -108,13 +108,14 @@ describe('Saved Contacts Endpoints', () => {
         .insert(testUsers)
     })
 
-    const requiredFields = ['job_title', 'company', 'contact_name']
+    const requiredFields = ['job_title', 'company', 'contact_name', 'connected']
 
     requiredFields.forEach((field) => {
       const contactBody = {
         job_title: 'Job1',
         company: 'Company1',
-        contact_name: 'Contact1'
+        contact_name: 'Contact1',
+        connected: false,
       }
 
       it(`responds with 400 required error when '${field}' is missing`, () => {
@@ -136,6 +137,7 @@ describe('Saved Contacts Endpoints', () => {
         job_title: 'Job1',
         company: 'Company1',
         contact_name: 'Contact1',
+        connected: false,
         linkedin: 'linkedin.com/person'
       }
 
@@ -153,6 +155,7 @@ describe('Saved Contacts Endpoints', () => {
         job_title: 'Job1',
         company: 'Company 1',
         contact_name: 'Contact1',
+        connected: false,
         email: 'badEmail'
       }
 
@@ -172,7 +175,8 @@ describe('Saved Contacts Endpoints', () => {
         contact_name: 'Contact3',
         email: 'email3@email.com',
         linkedin: 'http://www.linkedin.com/person',
-        comments: 'Contact 3'
+        comments: 'Contact 3',
+        connected: false
       }
 
       return supertest(app)
@@ -354,7 +358,7 @@ describe('Saved Contacts Endpoints', () => {
           .set('Authorization', helpers.makeAuthHeader(validCreds))
           .send({ irrelevantField: 'foo' })
           .expect(400, {
-            error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments'`
+            error: `Request body must contain either 'job_title', 'company', 'contact_name', 'email', 'linkedin', 'comments', or 'connected'`
           })
       })
 

@@ -8,6 +8,7 @@ create table "contacts"(
   "comments" text,
   "date_added" TIMESTAMP DEFAULT now() NOT NULL,
   "connected" BOOLEAN DEFAULT false not null,
+  "date_connected" TIMESTAMP,
   "user_id"  INTEGER REFERENCES "users"(id)
     ON DELETE CASCADE NOT NULL
 );

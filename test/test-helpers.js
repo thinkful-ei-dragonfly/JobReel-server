@@ -19,6 +19,9 @@ function makeUsersArray() {
       last_name: 'Last1',
       username: 'user1',
       password: 'Password1!',
+      city: 'city1',
+      industry: 'industry1',
+      job_title: 'job1'
     },
     {
       id: 2,
@@ -27,6 +30,9 @@ function makeUsersArray() {
       last_name: 'Last2',
       username: 'user2',
       password: 'Password2!',
+      city: 'city2',
+      industry: 'industry2',
+      job_title: 'job2'
     }
   ]
 }
@@ -39,6 +45,9 @@ function expectedUsers(){
       first_name: 'First1',
       last_name: 'Last1',
       username: 'user1',
+      city: 'city1',
+      industry: 'industry1',
+      job_title: 'job1'
     },
     {
       id: 2,
@@ -46,6 +55,9 @@ function expectedUsers(){
       first_name: 'First2',
       last_name: 'Last2',
       username: 'user2',
+      city: 'city2',
+      industry: 'industry2',
+      job_title: 'job2'
     }
   ]
 }

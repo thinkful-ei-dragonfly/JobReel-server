@@ -14,6 +14,8 @@ const ContactService = {
         'comments',
         'date_added',
         'connected',
+        'date_connected',
+        'notification',
         'user_id'
       )
       .where('user_id', user_id)
@@ -55,6 +57,8 @@ const ContactService = {
       comments: contact.comments,
       date_added: contact.date_added,
       connected: contact.connected,
+      date_connected: contact.date_connected,
+      notification: contact.notification,
       user_id: contact.user_id
     }
   }

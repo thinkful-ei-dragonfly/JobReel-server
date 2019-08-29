@@ -9,6 +9,7 @@ create table "contacts"(
   "date_added" TIMESTAMP DEFAULT now() NOT NULL,
   "connected" BOOLEAN DEFAULT false not null,
   "date_connected" TIMESTAMP,
+  "notification" BOOLEAN DEFAULT true not null,
   "user_id"  INTEGER REFERENCES "users"(id)
     ON DELETE CASCADE NOT NULL
 );

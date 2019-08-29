@@ -134,10 +134,12 @@ function makeJobsArray() {
       company: 'Company A',
       city: 'New York City',
       state: 'NY',
-      date_added: "2019-08-14T17:18:19.306Z",
+      date_added: '2019-08-14T17:18:19.306Z',
       url: 'http://www.thinkful.com',
       description: 'Engineering job',
       status: 'Interested',
+      date_applied: '2019-08-16T17:18:19.306Z',
+      notification: true
     },
     {
       job_id: 2,
@@ -146,11 +148,12 @@ function makeJobsArray() {
       company: 'Company B',
       city: 'Austin',
       state: 'TX',
-      date_added: "2019-08-14T17:18:19.306Z",
+      date_added: '2019-08-14T17:18:19.306Z',
       url: 'http://www.google.com',
       description: 'UI job',
       status: 'Interested',
-
+      date_applied: null,
+      notification: true
     }
   ]
 }
@@ -198,7 +201,9 @@ function makeContactsArray() {
       comments: 'Contact 1 comments',
       date_added: '2019-07-03T19:26:38.918Z',
       connected: false,
-      user_id: 1
+      user_id: 1,
+      date_connected: '2019-07-16T17:18:19.306Z',
+      notification: true
     },
     {
       contact_id: 2,
@@ -210,7 +215,9 @@ function makeContactsArray() {
       comments: 'Contact 2 comments',
       date_added: '2019-07-03T19:26:38.918Z',
       connected: true,
-      user_id: 2
+      user_id: 2,
+      date_connected: null,
+      notification: true
     }
   ]
 }

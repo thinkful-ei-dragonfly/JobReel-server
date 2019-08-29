@@ -194,10 +194,13 @@ describe('Saved Contacts Endpoints', () => {
           expect(res.body.email).to.eql(newContact.email)
           expect(res.body.linkedin).to.eql(newContact.linkedin)
           expect(res.body.comments).to.eql(newContact.comments)
+          expect(res.body.connected).to.eql(newContact.connected)
           expect(res.headers.location).to.eql(`/api/contacts/${res.body.contact_id}`)
           const expectedDate = new Date().toLocaleString();
-          const actualDate = new Date(res.body.date_added).toLocaleString();
-          expect(actualDate).to.eql(expectedDate);
+          const actualDateAdded = new Date(res.body.date_added).toLocaleString();
+          const actualDateConnected = new Date(res.body.date_connected).toLocaleString();
+          expect(actualDateAdded).to.eql(expectedDate);
+          expect(actualDateConnected).to.eql(expectedDate);
         })
         .expect(res =>
           db
@@ -213,8 +216,10 @@ describe('Saved Contacts Endpoints', () => {
               expect(row.linkedin).to.eql(newContact.linkedin)
               expect(row.comments).to.eql(newContact.comments)
               const expectedDate = new Date().toLocaleString();
-              const actualDate = new Date(row.date_added).toLocaleString();
-              expect(actualDate).to.eql(expectedDate);
+              const actualDateAdded = new Date(res.body.date_added).toLocaleString();
+              const actualDateConnected = new Date(res.body.date_connected).toLocaleString();
+              expect(actualDateAdded).to.eql(expectedDate);
+              expect(actualDateConnected).to.eql(expectedDate);
             })
         )
     })

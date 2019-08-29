@@ -168,7 +168,7 @@ describe('Saved Contacts Endpoints', () => {
       })
     })
 
-    it.only(`responds with 201 and returns the posted contact`, () => {
+    it(`responds with 201 and returns the posted contact`, () => {
       const newContact = {
         job_title: 'Job3',
         company: 'Company3',

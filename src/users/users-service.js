@@ -9,11 +9,33 @@ const UsersService = {
     .first()
     .then(user => !!user)
   },
+  hasOtherUserWithUserName(db, username, id){
+    return db('users')
+    .where({ username })
+    .first()
+    .then(user => {
+      if (user && user.id === parseInt(id)) {
+        return false;
+      }
+      return !!user
+    })
+  },
   hasUserWithEmail(db, email){
     return db('users')
     .where({ email })
     .first()
     .then(user => !!user)
+  },
+  hasOtherUserWithEmail(db, email, id){
+    return db('users')
+    .where({ email })
+    .first()
+    .then(user => {
+      if (user && user.id === parseInt(id)) {
+        return false;
+      }
+      return !!user
+    })
   },
   insertUser(db, newUser){
     return db
@@ -37,10 +59,10 @@ const UsersService = {
     .where({ id })
     .delete()
   },
-  updateUser(db, id, newJobFields){
+  updateUser(db, id, newUserFields){
     return db('users')
     .where('id', id)
-    .update(newJobFields)
+    .update(newUserFields)
   },
   serializeUser(user){
     return {
@@ -48,7 +70,10 @@ const UsersService = {
       email: xss(user.email),
       first_name: xss(user.first_name), 
       last_name: xss(user.last_name), 
-      username: xss(user.username)
+      username: xss(user.username),
+      city: xss(user.city),
+      industry: xss(user.industry),
+      job_title: xss(user.job_title),
     }
   }
 }

@@ -389,14 +389,17 @@ describe('User Endpoints', () => {
           })
       })
 
-      it(`responds with 204 and updates the user when the id param is the same as the user id`, () => {
+      it(`responds with 200 and updates the user when the id param is the same as the user id`, () => {
         const idToUpdate = 1
         const updateUser = {
           email: 'newUser@email.com',
           first_name: 'New',
           last_name: 'Name',
           username: 'newUser',
-          password: 'newPassword1!'
+          password: 'newPassword1!',
+          city: 'city1',
+          industry: 'industry1',
+          job_title: 'job1'
         }
         const expectedUser = {
           id: idToUpdate,
@@ -404,13 +407,16 @@ describe('User Endpoints', () => {
           first_name: 'New',
           last_name: 'Name',
           username: 'newUser',
+          city: 'city1',
+          industry: 'industry1',
+          job_title: 'job1'
         }
         const userCreds = { username: expectedUser.username, password: expectedUser.password }
         return supertest(app)
           .patch(`/api/users/${idToUpdate}`)
           .send(updateUser)
           .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(204)
+          .expect(200)
           .then(() =>
             supertest(app)
               .get(`/api/users/${idToUpdate}`)
@@ -419,7 +425,7 @@ describe('User Endpoints', () => {
           )
       })
 
-      it(`responds with 204 when updating only a subset of fields`, () => {
+      it(`responds with 200 when updating only a subset of fields`, () => {
         const idToUpdate = 1
         const updateUser = {
           email: 'update@email.com',
@@ -436,7 +442,7 @@ describe('User Endpoints', () => {
             fieldToIgnore: 'should not be in the GET response'
           })
           .set('Authorization', helpers.makeAuthHeader(validCreds))
-          .expect(204)
+          .expect(200)
           .then(res =>
             supertest(app)
               .get(`/api/users/${idToUpdate}`)

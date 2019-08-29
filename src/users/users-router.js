@@ -10,12 +10,14 @@ usersRouter
   .post('/', jsonBodyParser, async (req, res, next) => {
     const { email, first_name, last_name, username, password } = req.body
 
-    for (const field of ['email', 'first_name', 'last_name', 'username', 'password'])
+    for (const field of ['email', 'first_name', 'last_name', 'username', 'password']) {
+
       if (!req.body[field]) {
         return res.status(400).json({
           error: `Missing '${field}' in request body`
         })
       }
+    }
 
     try {
       const passwordError = ValidationService.validatePassword(password)
@@ -136,8 +138,8 @@ usersRouter
   })
   .patch('/:id', jsonBodyParser, async (req, res, next) => {
     const { id } = req.params
-    const { email, first_name, last_name, username, password } = req.body
-    let updatedUser = { email, first_name, last_name, username, password }
+    const { email, first_name, last_name, username, password, city, industry, job_title } = req.body
+    let updatedUser = { email, first_name, last_name, username, password, city, industry, job_title }
     let hashedPassword
     if(req.user.id !== parseInt(req.params.id)){
       return res.status(401)
@@ -174,9 +176,10 @@ usersRouter
     }
 
     if(username){
-      const hasUserWithUserName = await UsersService.hasUserWithUserName(
+      const hasUserWithUserName = await UsersService.hasOtherUserWithUserName(
         req.app.get('db'),
-        username
+        username,
+        id
       )
 
       if (hasUserWithUserName) {
@@ -193,9 +196,10 @@ usersRouter
         })
       }
       else {
-        const hasUserWithEmail = await UsersService.hasUserWithEmail(
+        const hasUserWithEmail = await UsersService.hasOtherUserWithEmail(
           req.app.get('db'),
-          email
+          email,
+          id
         )
   
         if (hasUserWithEmail) {
@@ -207,7 +211,7 @@ usersRouter
     }
 
     updatedUser = {
-      email, first_name, last_name, username, password: hashedPassword
+      email, first_name, last_name, username, password: hashedPassword, city, industry, job_title
     }
       UsersService.updateUser(
         req.app.get('db'),
@@ -215,7 +219,8 @@ usersRouter
         updatedUser
       )
       .then(numRowsAffected => {
-        res.status(204)
+        return res.status(200)
+        .json(UsersService.serializeUser(updatedUser))
         .end()
       })
     }

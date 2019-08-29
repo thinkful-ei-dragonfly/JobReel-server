@@ -19,6 +19,9 @@ function makeUsersArray() {
       last_name: 'Last1',
       username: 'user1',
       password: 'Password1!',
+      city: 'city1',
+      industry: 'industry1',
+      job_title: 'job1'
     },
     {
       id: 2,
@@ -27,6 +30,9 @@ function makeUsersArray() {
       last_name: 'Last2',
       username: 'user2',
       password: 'Password2!',
+      city: 'city2',
+      industry: 'industry2',
+      job_title: 'job2'
     }
   ]
 }
@@ -39,6 +45,9 @@ function expectedUsers(){
       first_name: 'First1',
       last_name: 'Last1',
       username: 'user1',
+      city: 'city1',
+      industry: 'industry1',
+      job_title: 'job1'
     },
     {
       id: 2,
@@ -46,6 +55,9 @@ function expectedUsers(){
       first_name: 'First2',
       last_name: 'Last2',
       username: 'user2',
+      city: 'city2',
+      industry: 'industry2',
+      job_title: 'job2'
     }
   ]
 }
@@ -134,10 +146,12 @@ function makeJobsArray() {
       company: 'Company A',
       city: 'New York City',
       state: 'NY',
-      date_added: "2019-08-14T17:18:19.306Z",
+      date_added: '2019-08-14T17:18:19.306Z',
       url: 'http://www.thinkful.com',
       description: 'Engineering job',
       status: 'Interested',
+      date_applied: '2019-08-16T17:18:19.306Z',
+      notification: true
     },
     {
       job_id: 2,
@@ -146,11 +160,12 @@ function makeJobsArray() {
       company: 'Company B',
       city: 'Austin',
       state: 'TX',
-      date_added: "2019-08-14T17:18:19.306Z",
+      date_added: '2019-08-14T17:18:19.306Z',
       url: 'http://www.google.com',
       description: 'UI job',
       status: 'Interested',
-
+      date_applied: null,
+      notification: true
     }
   ]
 }
@@ -198,7 +213,9 @@ function makeContactsArray() {
       comments: 'Contact 1 comments',
       date_added: '2019-07-03T19:26:38.918Z',
       connected: false,
-      user_id: 1
+      user_id: 1,
+      date_connected: '2019-07-16T17:18:19.306Z',
+      notification: true
     },
     {
       contact_id: 2,
@@ -210,7 +227,9 @@ function makeContactsArray() {
       comments: 'Contact 2 comments',
       date_added: '2019-07-03T19:26:38.918Z',
       connected: true,
-      user_id: 2
+      user_id: 2,
+      date_connected: null,
+      notification: true
     }
   ]
 }
@@ -325,15 +344,15 @@ function makeJobsFixtures() {
   return { testUsers, expectedAuthenticJobs, expectedGitHubJobs }
 }
 
-function cleanTables(db) {
-  return db.raw(
-    `TRUNCATE
-      lemonstand_users,
-      saved_recipes,
-      user_recipes
-      RESTART IDENTITY CASCADE`
-  )
-}
+// function cleanTables(db) {
+//   return db.raw(
+//     `TRUNCATE
+//       lemonstand_users,
+//       saved_recipes,
+//       user_recipes
+//       RESTART IDENTITY CASCADE`
+//   )
+// }
 
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET){

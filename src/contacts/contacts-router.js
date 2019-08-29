@@ -131,8 +131,8 @@ contactsRouter
   })
   .patch('/:contact_id', bodyParser, (req, res, next) => {
     const { contact_id } = req.params
-    const { job_title, company, contact_name, email, linkedin, comments, connected } = req.body
-    const updatedContact = { job_title, company, contact_name, email, linkedin, comments, connected }
+    const { job_title, company, contact_name, email, linkedin, comments, connected, date_connected, notification } = req.body
+    const updatedContact = { job_title, company, contact_name, email, linkedin, comments, connected, date_connected, notification }
 
     const numberOfValues = Object.values(updatedContact).filter(Boolean).length
     if (numberOfValues === 0) {

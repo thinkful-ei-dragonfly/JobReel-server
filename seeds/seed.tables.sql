@@ -36,7 +36,7 @@ VALUES
 
 INSERT INTO "resources" ("type", "title", "description", "date_added","user_id")
 VALUES
-('book','Cracking the Coding Interview', '189 programming interview questions', '2019-08-24T15:03:05.646Z', 1),
+('book','Cracking the Coding Interview', 'https://www.amazon.com/Cracking-Coding-Interview-Programming-Questions/dp/0984782850', '2019-08-24T15:03:05.646Z', 1),
 ('website','Python Tutor', 'http://pythontutor.com/javascript.html#mode=edit', '2019-08-23T15:03:05.646Z', 1);
 
 COMMIT;

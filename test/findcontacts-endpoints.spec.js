@@ -2,7 +2,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const config = require('../src/config')
 
-describe('Find Contacts Endpoints', function () {
+describe.skip('Find Contacts Endpoints', function () {
 
     const testUsers = helpers.makeUsersArray()
     const validCreds = { username: testUsers[0].username, password: testUsers[0].password }

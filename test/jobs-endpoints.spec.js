@@ -18,7 +18,7 @@ describe('Jobs Endpoints', function () {
             perpage: 10,
             page: 1,
             pages: 0,
-            last_update: '2019-08-26T19:06:16-05:00'
+            last_update: "2019-08-29T13:59:59-05:00"
         },
         stat: 'ok'
     };

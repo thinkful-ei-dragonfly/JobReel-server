@@ -304,7 +304,11 @@ function makeExpectedAuthenticJobs() {
       name: 'Uniform Teeth',
       url: 'http://uniformteeth.com',
       type: null,
-      location: [Object],
+      location: {
+        "id": "sanfranciscoca",
+        "name": "San Francisco, CA"
+      }
+      ,
       logo:
         'https://d2fcz5no062gar.cloudfront.nethttps://authenticjobs.s3.amazonaws.com/uploads/logos/5ec13120aec854e523389a875c755eb4/thumb/uniformteeth.jpeg',
       tagline: 'Come work with us!'
@@ -318,23 +322,21 @@ function makeExpectedAuthenticJobs() {
 }
 
 function makeExpectedGitHubJobs() {
-  return [{
-    id: '5dcf782d-5651-481c-9952-e8ee32758d7f',
-    type: 'Full Time',
-    url:
-      'https://jobs.github.com/positions/5dcf782d-5651-481c-9952-e8ee32758d7f',
-    created_at: 'Sun Jul 28 16:07:50 UTC 2019',
-    company: 'leadPops, Inc.',
-    company_url: 'https://leadPops.com',
-    location: 'San Diego',
-    title: 'Seeking Senior LAMP / FULL-STACK DEVELOPER',
-    description:
-      '<p>We are seeking a strong, experienced full-stack web developer to join our growing development team.</p>\n<p>To be clear, we\'re looking for both strong back-end development skills/experience and strong front-end development skills/experience.</p>\n<p>Working remote is an option, but the right candidate definitely needs to be located in the US -- ideally in San Diego, CA -- or Pacific or Central Time zone.</p>\n<p>WE ARE NOT CONSIDERING CANDIDATES OUTSIDE OF THE U.S. AT THIS TIME. IF OUTSIDE OF U.S., PLEASE DO NOT APPLY.</p>\n<p>Requiring a MINIMUM of 5 years’ web programming experience (preferred 7+ years), working full-time with a team, in the primary languages and frameworks we\'re on -- LAMP (Zend) &amp; Javascript.</p>\n<p>Experience in developing SaaS products is a plus.</p>\n<p>Seeking an individual that’s interested to work on challenging and rewarding projects. Great attitude is a must!</p>\n<p>The ideal candidate is a problem-solver, team-player, and eager to learn (and teach) the team new skills.</p>\n<p>Quality code and speed to deliver a great finished product and meet deadlines is crucial.</p>\n<p>Must be able to follow directions with excellent attention to detail.</p>\n<p>Ongoing training is provided, and you will be reporting directly to your team leaders in San Diego.</p>\n<p>Need to be able to work 40+ hours per week, remote or at the office.</p>\n<p>We use Slack and Zoom for interoffice communication with remote team members and developers.</p>\n<p>We follow Scrum and Agile methodology.</p>\n<p>We are offering a fixed monthly salary and bonuses. Salary offered will be based on experience.</p>\n<p>We also have a fun work environment and culture, plus benefits -- including health, dental, and 401K, and an awesome line of digital products and services that we continue to make even more awesome by the day.</p>\n<p>That\'s the stuff you\'re going to be working on.</p>\n<p>Our clients love us too -- approaching 100 5-star Google reviews with a 5.0 star rating. This makes building and selling our products and services that much more rewarding!</p>\n<p>The following skills are required for the position:</p>\n<ul>\n<li>PHP5</li>\n<li>Javascript</li>\n<li>Zend</li>\n<li>JSON</li>\n<li>CSS3</li>\n<li>HTML</li>\n<li>HTML5</li>\n<li>XML</li>\n<li>MySQL</li>\n<li>Jquery</li>\n<li>Responsive Coding</li>\n</ul>\n<p>The following are not required for the position, but a plus:</p>\n<ul>\n<li>PHP7</li>\n<li>Wordpress Development</li>\n<li>Wordpress Plugin Development</li>\n<li>Single Page Application Development</li>\n<li>Bootstrap</li>\n<li>Restful API</li>\n<li>Laravel</li>\n<li>VueJS</li>\n</ul>\n<p>Tools include:</p>\n<ul>\n<li>BitBucket</li>\n<li>Git</li>\n<li>Jira</li>\n</ul>\n<p>If this sounds like the right fit for you and your skill set, please inquire for a 1:1 interview with our team.</p>\n<p>We will be checking 2-3 references, and giving interested candidates 1-2 “tests” to verify skills and experience.</p>\n<p>We look forward to hearing from you!</p>\n',
-    how_to_apply:
-      '<p>Send your resume to <a href="mailto:andrew@leadpops.com">andrew@leadpops.com</a></p>\n<p>Also please send your LinkedIn profile link</p>\n<p>Also, any portfolio and/or code samples you can share.</p>\n<p>Thanks!</p>\n<p>-ap</p>\n',
-    company_logo:
-      'https://jobs.github.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcnh0IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--212e8563ba79c80de0d2310c10aac9e10d51a1ae/leadpops-NEW-logo%20LIGHT.png'
-  }]
+  return [
+    {
+      company: "Motive Interactive",
+      company_logo: null,
+      company_url: null,
+      created_at: "Mon Aug 19 19:11:51 UTC 2019",
+      description: `<p>About Motive</p>\n<p>Motive Interactive is one of the Top Mobile Ad Networks in the world, come join a team with an amazing future. Motive has been recognized by numerous publications including Inc. Magazine as one of the fastest growing companies in the United States. Motive is at the forefront of the Mobile Ad Technology industry and a proven leader in user acquisition for apps.</p>\n<p>We are seeking a Senior Software Engineer who can drive technical growth through design and implementation of distributed, high-availability systems. Candidates for this role demonstrate excellent technical acumen and can propose solutions to overcome technical challenges.</p>\n<p>Responsibilities</p>\n<ul>\n<li>\n<p>Interface with engineers, business stakeholders and analysts to inform decisions about product design and implementation</p>\n</li>\n<li>\n<p>Develop and maintain real-time, high-availability distributed systems</p>\n</li>\n<li>\n<p>Work with data team to launch new models into production infrastructure</p>\n</li>\n<li>\n<p>Support existing processes running in production</p>\n</li>\n<li>\n<p>Offer technical solutions to challenges encountered by engineering team</p>\n</li>\n</ul>\n<p>Requirements</p>\n<ul>\n<li>\n<p>At least 5 years of production experience</p>\n</li>\n<li>\n<p>Proficiency in Golang</p>\n</li>\n<li>\n<p>Strong algorithm design skills</p>\n</li>\n<li>\n<p>Profiling and code optimization skills</p>\n</li>\n<li>\n<p>Distributed Systems theory (replication, consistency levels, sharding)</p>\n</li>\n<li>\n<p>Knowledge of distributed database technologies</p>\n</li>\n<li>\n<p>AWS (EC2, ELB/ALB, Auto-scaling, S3)</p>\n</li>\n<li>\n<p>Experience implementing machine learning models in scaled, production environments</p>\n</li>\n<li>\n<p>Exceptional debugging skills</p>\n</li>\n</ul>\n<p>Bonus Points</p>\n<ul>\n<li>\n<p>Basic understanding of display/mobile advertising technology</p>\n</li>\n<li>\n<p>Experience with developing in containerized infrastructure (Docker / Kubernetes)</p>\n</li>\n<li>\n<p>Experience building low-latency systems</p>\n</li>\n<li>\n<p>Familiarity with less common AWS services (Redshift, Lambda)</p>\n</li>\n<li>\n<p>Experience with pub-sub systems like Kafka and Kinesis</p>\n</li>\n<li>\n<p>JavaScript / Typescript</p>\n</li>\n<li>\n<p>Familiarity with various AWS pricing models</p>\n</li>\n</ul>\n<p>Perks</p>\n<ul>\n<li>\n<p>Competitive base salary</p>\n</li>\n<li>\n<p>Profit from working with a team on the cutting edge of the mobile marketing and ad tech industry.</p>\n</li>\n<li>\n<p>A company recognized for its amazing Culture! Ranked as one of San Diego's best places to work</p>\n</li>\n<li>\n<p>Casual relaxed atmosphere with a results-driven mentality</p>\n</li>\n<li>\n<p>Health benefits: Medical/dental/vision benefits</p>\n</li>\n<li>\n<p>401K</p>\n</li>\n</ul>\n`,
+      how_to_apply: `<p><a href=\"https://jsco.re/31gtn\">https://jsco.re/31gtn</a></p>\n`,
+      id: "b78cba9d-001c-4de5-b85e-5bb200ee4f7d",
+      location: "San Diego, CA, US",
+      title: "Senior Software Engineer",
+      type: "Full Time",
+      url: "https://jobs.github.com/positions/b78cba9d-001c-4de5-b85e-5bb200ee4f7d",
+    }
+  ]
 }
 
 function makeJobsFixtures() {

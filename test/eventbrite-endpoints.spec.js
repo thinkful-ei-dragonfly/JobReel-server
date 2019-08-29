@@ -1,40 +1,40 @@
-const app = require('../src/app')
-const helpers = require('./test-helpers')
-const config = require('../src/config')
-var request = require('supertest')(app);
+// const app = require('../src/app')
+// const helpers = require('./test-helpers')
+// const config = require('../src/config')
+// var request = require('supertest')(app);
 
-describe('EventBrite Endpoints', function () {
+// describe('EventBrite Endpoints', function () {
     
 
-    describe.only('GET /api/incidents', function () {
+//     describe.only('GET /api/incidents', function () {
 
-        it('requires authorization', function(done) {
-            request
-                .get('/api/eventbrite')
-                .expect(401)
-                .end(function(err, res) {
-                    if (err) return done(err);
-                    done();
-                });
-        });
+//         it('requires authorization', function(done) {
+//             request
+//                 .get('/api/eventbrite')
+//                 .expect(401)
+//                 .end(function(err, res) {
+//                     if (err) return done(err);
+//                     done();
+//                 });
+//         });
 
-        let auth = {};
-        before(loginUser(auth));
+//         let auth = {};
+//         before(loginUser(auth));
 
-        it('should respond with a token', function (done) {
-            request
-                .get('/api/incidents')
-                .set('Authorization', 'bearer ' + auth.token)
-                .expect(200)
-                .expect('Content-Type', /json/)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.be.instanceof(Array);
-                    done();
-                });
-        });
+//         it('should respond with a token', function (done) {
+//             request
+//                 .get('/api/incidents')
+//                 .set('Authorization', 'bearer ' + auth.token)
+//                 .expect(200)
+//                 .expect('Content-Type', /json/)
+//                 .end(function (err, res) {
+//                     if (err) return done(err);
+//                     res.body.should.be.instanceof(Array);
+//                     done();
+//                 });
+//         });
 
-    });
+//     });
 
     // function loginUser(auth) {
     //     return function (done) {

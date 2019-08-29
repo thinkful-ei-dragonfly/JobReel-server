@@ -168,14 +168,13 @@ describe('Saved Contacts Endpoints', () => {
       })
     })
 
-    it(`responds with 201 and returns the posted contact`, () => {
+    it.only(`responds with 201 and returns the posted contact`, () => {
       const newContact = {
         job_title: 'Job3',
         company: 'Company3',
         contact_name: 'Contact3',
         email: 'email3@email.com',
         linkedin: 'http://www.linkedin.com/person',
-        date_connected: new Date(),
         comments: 'Contact 3',
         connected: false
       }
@@ -199,9 +198,7 @@ describe('Saved Contacts Endpoints', () => {
           expect(res.headers.location).to.eql(`/api/contacts/${res.body.contact_id}`)
           const expectedDate = new Date().toLocaleString();
           const actualDateAdded = new Date(res.body.date_added).toLocaleString();
-          const actualDateConnected = new Date(res.body.date_connected).toLocaleString();
           expect(actualDateAdded).to.eql(expectedDate);
-          expect(actualDateConnected).to.eql(expectedDate);
         })
         .expect(res =>
           db

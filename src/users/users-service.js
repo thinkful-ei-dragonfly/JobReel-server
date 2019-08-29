@@ -31,7 +31,6 @@ const UsersService = {
     .where({ email })
     .first()
     .then(user => {
-      console.log(user)
       if (user && user.id === parseInt(id)) {
         return false;
       }

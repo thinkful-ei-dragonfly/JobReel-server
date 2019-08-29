@@ -140,7 +140,6 @@ usersRouter
     const { id } = req.params
     const { email, first_name, last_name, username, password, city, industry, job_title } = req.body
     let updatedUser = { email, first_name, last_name, username, password, city, industry, job_title }
-    // console.log(updatedUser);
     let hashedPassword
     if(req.user.id !== parseInt(req.params.id)){
       return res.status(401)

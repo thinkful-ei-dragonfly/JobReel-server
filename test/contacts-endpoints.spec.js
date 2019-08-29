@@ -175,6 +175,7 @@ describe('Saved Contacts Endpoints', () => {
         contact_name: 'Contact3',
         email: 'email3@email.com',
         linkedin: 'http://www.linkedin.com/person',
+        date_applied: '2019-07-03T19:26:38.918Z',
         comments: 'Contact 3',
         connected: false
       }

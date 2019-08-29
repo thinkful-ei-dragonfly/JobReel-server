@@ -155,6 +155,7 @@ describe('Saved Jobs Endpoints', () => {
         city: 'Minneapolis',
         state: 'MN',
         url: 'http://www.facebook.com',
+        date_applied: '2019-07-03T19:26:38.918Z',
         description: 'UX job',
       }
 

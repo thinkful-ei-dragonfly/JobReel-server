@@ -155,7 +155,6 @@ describe('Saved Jobs Endpoints', () => {
         city: 'Minneapolis',
         state: 'MN',
         url: 'http://www.facebook.com',
-        date_applied: new Date(),
         description: 'UX job',
       }
 
@@ -178,9 +177,7 @@ describe('Saved Jobs Endpoints', () => {
           expect(res.headers.location).to.eql(`/api/savedjobs/${res.body.job_id}`)
           const expectedDate = new Date().toLocaleString();
           const actualDateAdded = new Date(res.body.date_added).toLocaleString();
-          const actualDateApplied = new Date(res.body.date_applied).toLocaleString();
           expect(actualDateAdded).to.eql(expectedDate);
-          expect(actualDateApplied).to.eql(expectedDate);
         })
         .expect(res =>
           db
@@ -197,9 +194,7 @@ describe('Saved Jobs Endpoints', () => {
               expect(row.description).to.eql(newJob.description)
               const expectedDate = new Date().toLocaleString();
               const actualDateAdded = new Date(res.body.date_added).toLocaleString();
-              const actualDateApplied = new Date(res.body.date_applied).toLocaleString();
               expect(actualDateAdded).to.eql(expectedDate);
-              expect(actualDateApplied).to.eql(expectedDate);
             })
         )
     })

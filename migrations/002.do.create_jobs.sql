@@ -8,7 +8,7 @@ create table "jobs"(
   "url" text not null,
   "description" text,
   "status" text DEFAULT 'Interested' NOT NULL,
-  "date_applied" TIMESTAMP,
+  "date_applied" TIMESTAMP DEFAULT null,
   "notification" BOOLEAN DEFAULT true not null,
   "user_id"  INTEGER REFERENCES "users"(id)
     ON DELETE CASCADE NOT NULL

@@ -21,8 +21,8 @@ VALUES
 
 INSERT INTO "events" ("event_name", "host", "city", "state", "address", "date", "url", "description", "status", "user_id")
 VALUES
-('September NY Tech Meetup','NY Tech Alliance','New York','NY', '111 St Name', '2019-10-20T15:03:05.646Z', 'https://http:eventbrite.com', null, 'Will Attend', 1),
-('APIs and IPAs','Seattle Tech','Seattle','WA','222 St Name', '2019-08-25T15:03:05.646Z', 'https://http:eventbrite.com', 'Met several senior developers from Amazon', 'Attended', 1);
+('September NY Tech Meetup','NY Tech Alliance','New York','NY', '111 St Name', '2019-10-20T15:03:05.646Z', 'https://www.eventbrite.com', null, 'Will Attend', 1),
+('APIs and IPAs','Seattle Tech','Seattle','WA','222 St Name', '2019-08-25T15:03:05.646Z', 'https://www.meetup.com', 'Met several senior developers from Amazon', 'Attended', 1);
 
 INSERT INTO "contacts" ("contact_name", "job_title", "company", "email", "linkedin", "comments", "connected", "date_connected", "user_id")
 VALUES

@@ -31,12 +31,11 @@ savedJobRouter
     }
   })
   .post('/', bodyParser, async (req, res, next) => {
-    const { job_title, company, city, state, date_added, url, description } = req.body
+    const { job_title, company, city, state, date_added, url, description, date_applied } = req.body
     const required = {
       job_title,
       company,
       city,
-      // state,
       url,
     }
 
@@ -45,14 +44,6 @@ savedJobRouter
         return res.status(400).json({
           error: `Missing '${key}' in request body`
         });
-
-    // if (state) {
-    //   if (!ValidationService.validateState(state)) {
-    //     return res.status(400).json({
-    //       error: 'Not a valid state code'
-    //     })
-    //   }
-    // }
 
     if (!ValidationService.validateUrl(url)) {
       return res.status(400).json({
@@ -68,7 +59,8 @@ savedJobRouter
         state,
         date_added,
         url,
-        description
+        description,
+        date_applied
       }
 
       newJob.user_id = req.user.id
@@ -134,8 +126,8 @@ savedJobRouter
   })
   .patch('/:job_id', bodyParser, (req, res, next) => {
     const { job_id } = req.params
-    const { job_title, company, city, state, date_added, url, description, status } = req.body
-    const updatedJob = { job_title, company, city, state, date_added, url, description, status }
+    const { job_title, company, city, state, date_added, url, description, status, date_applied, notification } = req.body
+    const updatedJob = { job_title, company, city, state, date_added, url, description, status, date_applied, notification }
 
     const numberOfValues = Object.values(updatedJob).filter(Boolean).length
     if (numberOfValues === 0) {
@@ -156,17 +148,6 @@ savedJobRouter
           })
       }
     }
-
-    // if (state) {
-    //   const validateState = ValidationService.validateState(state)
-    //   if (!validateState) {
-    //     return res
-    //       .status(400)
-    //       .json({
-    //         error: 'Not a valid state code'
-    //       })
-    //   }
-    // }
 
     JobService.updateJob(
       req.app.get('db'),

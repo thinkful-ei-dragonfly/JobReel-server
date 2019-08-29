@@ -172,11 +172,12 @@ describe('Saved Jobs Endpoints', () => {
           expect(res.body.city).to.eql(newJob.city)
           expect(res.body.state).to.eql(newJob.state)
           expect(res.body.url).to.eql(newJob.url)
+          expect(res.body.connected).to.eql(newJob.connected)
           expect(res.body.description).to.eql(newJob.description)
           expect(res.headers.location).to.eql(`/api/savedjobs/${res.body.job_id}`)
           const expectedDate = new Date().toLocaleString();
-          const actualDate = new Date(res.body.date_added).toLocaleString();
-          expect(actualDate).to.eql(expectedDate);
+          const actualDateAdded = new Date(res.body.date_added).toLocaleString();
+          expect(actualDateAdded).to.eql(expectedDate);
         })
         .expect(res =>
           db
@@ -192,8 +193,8 @@ describe('Saved Jobs Endpoints', () => {
               expect(row.url).to.eql(newJob.url)
               expect(row.description).to.eql(newJob.description)
               const expectedDate = new Date().toLocaleString();
-              const actualDate = new Date(row.date_added).toLocaleString();
-              expect(actualDate).to.eql(expectedDate);
+              const actualDateAdded = new Date(res.body.date_added).toLocaleString();
+              expect(actualDateAdded).to.eql(expectedDate);
             })
         )
     })

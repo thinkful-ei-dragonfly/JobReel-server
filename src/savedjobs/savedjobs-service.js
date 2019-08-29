@@ -14,6 +14,8 @@ const JobService = {
         'url',
         'description',
         'status',
+        'date_applied',
+        'notification',
         'user_id'
       )
       .where('user_id', user_id)
@@ -58,6 +60,8 @@ const JobService = {
       url: job.url,
       description: xss(job.description),
       status: job.status,
+      date_applied: job.date_applied,
+      notification: job.notification,
       user_id: job.user_id
     }
   }

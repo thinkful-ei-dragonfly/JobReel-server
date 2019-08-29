@@ -185,7 +185,6 @@ describe('Saved Contacts Endpoints', () => {
         .send(newContact)
         .expect(201)
         .expect(res => {
-          console.log(res.body.date_connected)
           expect(res.body).to.have.property('contact_id')
           expect(res.body).to.have.property('connected')
           expect(res.body).to.have.property('user_id')

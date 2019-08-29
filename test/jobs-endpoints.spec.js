@@ -1,64 +1,100 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
-const config = require ('../src/config')
+const config = require('../src/config')
 
 describe('Jobs Endpoints', function () {
 
+    const testUsers = helpers.makeUsersArray()
+    const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+
     const { expectedAuthenticJobs, expectedGitHubJobs } = helpers.makeJobsFixtures()
 
-    describe(`Getting jobsfrom /api/jobs/authentic`, () => {
+    const badSearch = { search: { location: 'asdf', jobTitle: 'asdf' } };
+    const badResponse = {
+        listings:
+        {
+            listing: [],
+            total: 0,
+            perpage: 10,
+            page: 1,
+            pages: 0,
+            last_update: "2019-08-29T13:59:59-05:00"
+        },
+        stat: 'ok'
+    };
+    const goodSearch = { search: { location: 'San Francisco', jobTitle: 'uniform teeth' } }
+    const gitHubSearch = { search: { location: 'san diego', jobTitle: 'Senior Software Engineer' } }
+    const emptySearch = { search: { } };
+
+    describe(`Getting jobs from /api/jobs/authentic`, () => {
         context(`Given no jobs`, () => {
-            it(`responds with 200 and an empty list`, () => {
+            it(`responds with 200 and an a nested empty list`, () => {
                 return supertest(app)
                     .post('/api/jobs/authentic')
-                    .expect(500)
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(badSearch)
+                    .expect(200, badResponse)
             })
         })
 
+        context(`Given an empty search`, () => {
+            it(`responds with a 400`, () => {
+                return supertest(app)
+                    .post('/api/jobs/authentic')
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(emptySearch)
+                    .expect(400)
+            })
+        })
 
         context('Given there are authentic API jobs', () => {
             it('responds with 200 and all of the jobs', () => {
-                app.post((req, res, next) => {
-                    const jobTitle = 'Uniform Teeth'
-                    const locaiton = 'San Francisco'
-                    unirest.get(`https://authenticjobs.com/api/?api_key=${config.AUTHENTIC_JOBS_API_TOKEN}&method=aj.jobs.search&keywords=${jobTitle}&location=${location}&format=json`)
-                        .end(function (result) {
-                            if (result.error) throw new Error(result.error)
-                            res.status(200).send(result.body);
-                        })
-                    return supertest(app)
-                        .post('/api/jobs')
-                        .expect(200, expectedAuthenticJobs)
-                })
+                return supertest(app)
+                    .post('/api/jobs/authentic')
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(goodSearch)
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body.listings.listing).to.eql(expectedAuthenticJobs)
+                    })
             })
         })
     })
+
     describe(`Getting jobs from /api/jobs/github`, () => {
         context(`Given no jobs`, () => {
             it(`responds with 200 and an empty list`, () => {
                 return supertest(app)
                     .post('/api/jobs/github')
-                    .send({ jobTitle: 'Nonsense1234', location: 'Nonsense1234' })
-                    .expect(500)
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(badSearch)
+                    .expect(200, [])
+            })
+        })
+
+        context(`Given an empty search`, () => {
+            it(`responds with a 400`, () => {
+                return supertest(app)
+                    .post('/api/jobs/github')
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(emptySearch)
+                    .expect(400)
             })
         })
 
 
         context('Given there are Github API jobs', () => {
             it('responds with 200 and all of the jobs', () => {
-                app.post((req, res, next) => {
-                    const jobTitle = 'Full-stack'
-                    const locaiton = 'San Diego'
-                    unirest.get(`https://jobs.github.com/positions.json?description=${jobTitle}&location=${location}`)
-                        .end(function (result) {
-                            if (result.error) throw new Error(result.error)
-                            res.status(200).send(result.body);
-                        })
-                    return supertest(app)
-                        .post('/api/jobs')
-                        .expect(200, expectedGitHubJobs)
-                })
+                return supertest(app)
+                    .post('/api/jobs/github')
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(gitHubSearch)
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body).to.eql(expectedGitHubJobs)
+                    })
             })
         })
     })
 })
+

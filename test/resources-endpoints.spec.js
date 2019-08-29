@@ -14,14 +14,13 @@ describe('Resources Enpoints', () => {
   })
 
   after('disconnect from db', () => db.destroy())
-  before('cleanup', () => db.raw('TRUNCATE  users, resources RESTART IDENTITY CASCADE'))
+  before('cleanup', () => db.raw('TRUNCATE users, resources RESTART IDENTITY CASCADE'))
 
   afterEach('cleanup', () => db.raw('TRUNCATE users, resources RESTART IDENTITY CASCADE'))
 
   describe(`GET /api/resources`, () => {
 
     context(`Given no authorization`, () => {
-
 
       beforeEach('insert resources', () => {
         return helpers.seedResources(db, testUsers, testResources)

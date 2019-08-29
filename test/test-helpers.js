@@ -332,15 +332,15 @@ function makeJobsFixtures() {
   return { testUsers, expectedAuthenticJobs, expectedGitHubJobs }
 }
 
-function cleanTables(db) {
-  return db.raw(
-    `TRUNCATE
-      lemonstand_users,
-      saved_recipes,
-      user_recipes
-      RESTART IDENTITY CASCADE`
-  )
-}
+// function cleanTables(db) {
+//   return db.raw(
+//     `TRUNCATE
+//       lemonstand_users,
+//       saved_recipes,
+//       user_recipes
+//       RESTART IDENTITY CASCADE`
+//   )
+// }
 
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET){

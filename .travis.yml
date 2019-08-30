@@ -16,4 +16,3 @@ env:
     - MIGRATION_DB_USER=postgres
     - JWT_SECRET=jobReel-jwt-secret
     - JWT_EXPIRY=3h
-    - TEST_DB_URL="postgresql://dunder-mifflin@localhost/jobreel-test"

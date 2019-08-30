@@ -11,7 +11,6 @@ const { requireAuth } = require('../middleware/jwt-auth')
 jobsRouter
     .route(`/authentic`)
     .post(jsonBodyParser, (req, res, next) => {
-        console.log(req.body)
         if ((Object.keys(req.body.search).length === 0)) {
             return res.status(400).json({
                 error: `Missing search in request body`
@@ -36,7 +35,6 @@ jobsRouter
 jobsRouter
     .route(`/github`)
     .post(jsonBodyParser, (req, res, next) => {
-        console.log(req.body)
         if ((Object.keys(req.body.search).length === 0)) {
             return res.status(400).json({
                 error: `Missing search in request body`

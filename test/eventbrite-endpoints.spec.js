@@ -1,57 +1,51 @@
-// const app = require('../src/app')
-// const helpers = require('./test-helpers')
-// const config = require('../src/config')
-// var request = require('supertest')(app);
-// let {token} = require('../src/eventbrite/eventbrite-router')
+const app = require('../src/app')
+const helpers = require('./test-helpers')
+const config = require('../src/config')
+let { token } = require('../src/eventbrite/eventbrite-router')
+var should = require('should');
+var requestOne = require('supertest')('https://www.eventbrite.com/oauth/authorize?response_type=code&client_id=I6MVEHHYVS3LD42Z46&redirect_uri=https://stormy-beyond-18995.herokuapp.com/api/eventbrite/access');
+var requestTwo = require('supertest')(app);
+
+const testUsers = helpers.makeUsersArray()
+const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
+const emptySearch = { category: { }};
+const badCategorySearch = { category: {id: '2999' } };
+const goodCategorySearch = { category: {id: '101' } };
+
+describe('GET /api/events', function () {
+
+    it('should redirect from the endpoint', function (done) {
+        requestOne
+            .get('/')
+            .set('Accept', 'application/json')
+            .expect(302, done);
+    });
+
+    describe(`Getting categories from /api/eventbrite/categoriesbyID`, () => {
+        context(`Given no category matching id`, () => {
+            it(`responds with 200 and an a nested empty list`, () => {
+                return supertest(app)
+                    .post('/api/eventbrite/categoriesbyID')
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(badCategorySearch)
+                    .expect(res => {
+                        res.body.should.be.instanceOf(Object)
+                    })
+            })
+        })
+
+        context(`Given an empty search`, () => {
+            it(`responds with a 400`, () => {
+                return supertest(app)
+                    .post('/api/eventbrite/categoriesbyID')
+                    .set('Authorization', helpers.makeAuthHeader(validCreds))
+                    .send(emptySearch)
+                    .expect(400)
+            })
+        })
+    })
+
+});
 
 
-// describe.only('EventBrite Endpoints', function () {
 
-//     describe.only('GET /api/incidents', function () {
-
-//         it('requires authorization', function(done) {
-//             request
-//                 .get('/api/eventbrite')
-//                 .expect(401)
-//                 .end(function(err, res) {
-//                     if (err) return done(err);
-//                     done();
-//                 });
-//         });
-
-//         let auth = {};
-//         before(loginUser(auth));
-
-//         it('should respond with a token', function (done) {
-//             request
-//                 .get('/api/events')
-//                 .set('Authorization', 'bearer ' + auth.token)
-//                 .expect(200)
-//                 .expect('Content-Type', /json/)
-//                 .end(function (err, res) {
-//                     if (err) return done(err);
-//                     res.body.should.be.instanceof(Array);
-//                     done();
-//                 });
-//         });
-
-//     });
-
-//     function loginUser(auth) {
-//         return function (done) {
-//             request
-//                 .post('/auth/local')
-//                 .send({
-//                     email: 'test@test.com',
-//                     password: 'test'
-//                 })
-//                 .expect(200)
-//                 .end(onResponse);
-
-//             function onResponse(err, res) {
-//                 auth.token = res.body.token;
-//                 return done();
-//             }
-//         };
-//     }
-// })

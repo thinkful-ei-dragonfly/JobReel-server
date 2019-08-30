@@ -2,7 +2,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const config = require('../src/config')
 
-describe.skip('Find Contacts Endpoints', function () {
+describe('Find Contacts Endpoints', function () {
 
     const testUsers = helpers.makeUsersArray()
     const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
@@ -19,7 +19,7 @@ describe.skip('Find Contacts Endpoints', function () {
             {
                 "domain": "thinkful.com",
                 "extracted_on": "2018-08-27",
-                "last_seen_on": "2019-06-03",
+                "last_seen_on": "2019-08-30",
                 "still_on_page": true,
                 "uri": "http://thinkful.com/blog/work-at-thinkful",
             },

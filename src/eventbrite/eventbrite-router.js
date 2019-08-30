@@ -25,7 +25,7 @@ eventbriteRouter
       .send({ grant_type: "authorization_code", client_id: `${config.CLIENT_ID}`, client_secret: `${config.CLIENT_SECRET}`, code: `${code}`, redirect_uri: 'https://stormy-beyond-18995.herokuapp.com/api/eventbrite/token' })
       .end(function (response) {
         userToken = response.body.access_token
-        res.redirect('http://localhost:3000/eventbritesearch')
+        res.redirect('https://jobreel.now.sh/eventbritesearch')
       });
   })
 

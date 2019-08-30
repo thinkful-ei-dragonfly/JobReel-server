@@ -2,7 +2,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const config = require('../src/config')
 
-describe('Jobs Endpoints', function () {
+describe.only('Jobs Endpoints', function () {
 
     const testUsers = helpers.makeUsersArray()
     const validCreds = { username: testUsers[0].username, password: testUsers[0].password }
@@ -10,18 +10,6 @@ describe('Jobs Endpoints', function () {
     const { expectedAuthenticJobs, expectedGitHubJobs } = helpers.makeJobsFixtures()
 
     const badSearch = { search: { location: 'asdf', jobTitle: 'asdf' } };
-    const badResponse = {
-        listings:
-        {
-            listing: [],
-            total: 0,
-            perpage: 10,
-            page: 1,
-            pages: 0,
-            last_update: "2019-08-29T13:59:59-05:00"
-        },
-        stat: 'ok'
-    };
     const goodSearch = { search: { location: 'San Francisco', jobTitle: 'uniform teeth' } }
     const gitHubSearch = { search: { location: 'san diego', jobTitle: 'Senior Software Engineer' } }
     const emptySearch = { search: { } };
@@ -33,7 +21,9 @@ describe('Jobs Endpoints', function () {
                     .post('/api/jobs/authentic')
                     .set('Authorization', helpers.makeAuthHeader(validCreds))
                     .send(badSearch)
-                    .expect(200, badResponse)
+                    .expect(res => {
+                        expect(res.body.listings.listing).to.eql([])
+                    })
             })
         })
 
